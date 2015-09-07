@@ -97,25 +97,25 @@ module Strut
     end
 
     def make_execute_command(line, instance)
-      line_metadata = {:line => line}
+      line_metadata = make_line_metadata(line)
       slim_command = CallCommand.new(@command_id, instance, "execute")
       [line_metadata, slim_command]
     end
 
     def make_status_command(line, instance, status)
-      line_metadata = {:line => line, :value => status}
+      line_metadata = make_line_metadata(line, status)
       slim_command = CallCommand.new(@command_id, instance, "statusCode")
       [line_metadata, slim_command]
     end
 
     def make_make_command(line, instance, class_name)
-      line_metadata = {:line => line}
+      line_metadata = make_line_metadata(line)
       slim_command = MakeCommand.new(@command_id, instance, class_name)
       [line_metadata, slim_command]
     end
 
     def make_import_command(line, namespace)
-      line_metadata = {:line => line}
+      line_metadata = make_line_metadata(line)
       slim_command = ImportCommand.new(@command_id, namespace)
       [line_metadata, slim_command]
     end
