@@ -59,15 +59,11 @@ module Strut
       end
     end
 
-    def classify(str)
       str.split('_').collect(&:capitalize).join
-    end
-
     def make_given_command(property_name, value_container, instance)
       line = value_container["line"]
       value = value_container["value"]
       line_metadata = make_line_metadata(line)
-      slim_command = make_slim_command(CALL_COMMAND, instance, "Set#{classify(property_name)}", value)
       [line_metadata, slim_command]
     end
 
@@ -75,7 +71,7 @@ module Strut
       line = value_container["line"]
       value = value_container["value"]
       line_metadata = make_line_metadata(line, value)
-      slim_command = make_slim_command(CALL_COMMAND, instance, "Set#{classify(property_name)}")
+      slim_command = make_slim_command(CALL_COMMAND, instance, property_name)
       [line_metadata, slim_command]
     end
 
@@ -86,8 +82,9 @@ module Strut
     end
 
     def make_slim_command(command, instance, property, value = nil)
-      slim_command = [@id, command, instance, "Set#{classify(property)}"]
+      slim_command = [@id, command, instance, property]
       slim_command << value unless value.nil?
+      puts slim_command.inspect
       slim_command
     end
 
