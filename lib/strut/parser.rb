@@ -4,7 +4,7 @@ require "strut/slim_command"
 module Strut
   class Parser
     def initialize
-      @id = 0
+      @command_id = 0
       @commands = []
       @line_metadata = {}
     end
@@ -68,7 +68,7 @@ module Strut
       line = value_container["line"]
       value = value_container["value"]
       line_metadata = make_line_metadata(line)
-      slim_command = CallCommand.new(@id, instance, "set#{property_name}", value)
+      slim_command = CallCommand.new(@command_id, instance, "set#{property_name}", value)
       [line_metadata, slim_command]
     end
 
@@ -76,7 +76,7 @@ module Strut
       line = value_container["line"]
       value = value_container["value"]
       line_metadata = make_line_metadata(line, value)
-      slim_command = CallCommand.new(@id, instance, property_name)
+      slim_command = CallCommand.new(@command_id, instance, property_name)
       [line_metadata, slim_command]
     end
 
@@ -91,32 +91,32 @@ module Strut
     end
 
     def store_command(line_metadata, slim_command)
-      @line_metadata[@id] = line_metadata
+      @line_metadata[@command_id] = line_metadata
       @commands << slim_command
-      @id += 1
+      @command_id += 1
     end
 
     def make_execute_command(line, instance)
       line_metadata = {:line => line}
-      slim_command = CallCommand.new(@id, instance, "execute")
+      slim_command = CallCommand.new(@command_id, instance, "execute")
       [line_metadata, slim_command]
     end
 
     def make_status_command(line, instance, status)
       line_metadata = {:line => line, :value => status}
-      slim_command = CallCommand.new(@id, instance, "statusCode")
+      slim_command = CallCommand.new(@command_id, instance, "statusCode")
       [line_metadata, slim_command]
     end
 
     def make_make_command(line, instance, class_name)
       line_metadata = {:line => line}
-      slim_command = MakeCommand.new(@id, instance, class_name)
+      slim_command = MakeCommand.new(@command_id, instance, class_name)
       [line_metadata, slim_command]
     end
 
     def make_import_command(line, namespace)
       line_metadata = {:line => line}
-      slim_command = ImportCommand.new(@id, namespace)
+      slim_command = ImportCommand.new(@command_id, namespace)
       [line_metadata, slim_command]
     end
 
@@ -130,7 +130,7 @@ module Strut
     end
 
     def make_slim_commands(path, method, status, scenario, params)
-      instance = "instance_#{@id}"
+      instance = "instance_#{@command_id}"
 
       line = params["line"]
 
