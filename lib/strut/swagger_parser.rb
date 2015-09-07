@@ -22,7 +22,7 @@ module Strut
 
       paths = parsed_yaml["paths"]
 
-      (line_metadata, import_command) = make_import_command(0, "Specs")
+      (line_metadata, import_command) = make_import_command(0, "specs")
       store_command(line_metadata, import_command)
 
       extract_scenarios_for_paths(paths["value"])
@@ -59,11 +59,11 @@ module Strut
       end
     end
 
-      str.split('_').collect(&:capitalize).join
     def make_given_command(property_name, value_container, instance)
       line = value_container["line"]
       value = value_container["value"]
       line_metadata = make_line_metadata(line)
+      slim_command = make_slim_command(CALL_COMMAND, instance, "set#{property_name}", value)
       [line_metadata, slim_command]
     end
 
@@ -100,13 +100,13 @@ module Strut
 
     def make_execute_command(line, instance)
       line_metadata = {:line => line}
-      slim_command = [@id, CALL_COMMAND, instance, "Execute"]
+      slim_command = [@id, CALL_COMMAND, instance, "execute"]
       [line_metadata, slim_command]
     end
 
     def make_status_command(line, instance, status)
       line_metadata = {:line => line, :value => status}
-      slim_command = [@id, CALL_COMMAND, instance, "StatusCode"]
+      slim_command = [@id, CALL_COMMAND, instance, "statusCode"]
       [line_metadata, slim_command]
     end
 
@@ -132,7 +132,7 @@ module Strut
     end
 
     def make_slim_commands(path, method, status, scenario, params)
-      instance = "instance#{@id}"
+      instance = "instance_#{@id}"
 
       line = params["line"]
 
