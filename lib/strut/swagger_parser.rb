@@ -84,7 +84,6 @@ module Strut
     def make_slim_command(command, instance, property, value = nil)
       slim_command = [@id, command, instance, property]
       slim_command << value unless value.nil?
-      puts slim_command.inspect
       slim_command
     end
 
