@@ -11,8 +11,8 @@ module Strut
     end
 
     def responses_for_commands(commands)
-      socket = prepare_socket
       encoded_commands = encode_commands(commands)
+      socket = prepare_socket
       write_commands(socket, encoded_commands)
       response = read_response(socket)
       decode_response(response)
@@ -25,7 +25,8 @@ module Strut
     end
 
     def encode_commands(commands)
-      serialised_commands = ListSerializer.serialize(commands)
+      flattened_commands = commands.map { |c| c.to_a }
+      serialised_commands = ListSerializer.serialize(flattened_commands)
       length = ListSerializer.length_string(serialised_commands.length)
       "#{length}#{serialised_commands}"
     end

@@ -1,12 +1,8 @@
 require "strut/extensions"
+require "strut/slim_command"
 
 module Strut
   class Parser
-
-    IMPORT_COMMAND = "import"
-    MAKE_COMMAND = "make"
-    CALL_COMMAND = "call"
-
     def initialize
       @id = 0
       @commands = []
@@ -72,7 +68,7 @@ module Strut
       line = value_container["line"]
       value = value_container["value"]
       line_metadata = make_line_metadata(line)
-      slim_command = make_slim_command(CALL_COMMAND, instance, "set#{property_name}", value)
+      slim_command = CallCommand.new(@id, instance, "set#{property_name}", value)
       [line_metadata, slim_command]
     end
 
@@ -80,7 +76,7 @@ module Strut
       line = value_container["line"]
       value = value_container["value"]
       line_metadata = make_line_metadata(line, value)
-      slim_command = make_slim_command(CALL_COMMAND, instance, property_name)
+      slim_command = CallCommand.new(@id, instance, property_name)
       [line_metadata, slim_command]
     end
 
@@ -88,12 +84,6 @@ module Strut
       metadata = {:line => line}
       metadata[:value] = value unless value.nil?
       metadata
-    end
-
-    def make_slim_command(command, instance, property, value = nil)
-      slim_command = [@id, command, instance, property]
-      slim_command << value unless value.nil?
-      slim_command
     end
 
     def stages_with_names(stages, names)
@@ -108,25 +98,25 @@ module Strut
 
     def make_execute_command(line, instance)
       line_metadata = {:line => line}
-      slim_command = [@id, CALL_COMMAND, instance, "execute"]
+      slim_command = CallCommand.new(@id, instance, "execute")
       [line_metadata, slim_command]
     end
 
     def make_status_command(line, instance, status)
       line_metadata = {:line => line, :value => status}
-      slim_command = [@id, CALL_COMMAND, instance, "statusCode"]
+      slim_command = CallCommand.new(@id, instance, "statusCode")
       [line_metadata, slim_command]
     end
 
     def make_make_command(line, instance, class_name)
       line_metadata = {:line => line}
-      slim_command = [@id, MAKE_COMMAND, instance, class_name]
+      slim_command = MakeCommand.new(@id, instance, class_name)
       [line_metadata, slim_command]
     end
 
     def make_import_command(line, namespace)
       line_metadata = {:line => line}
-      slim_command = [@id, IMPORT_COMMAND, namespace]
+      slim_command = ImportCommand.new(@id, namespace)
       [line_metadata, slim_command]
     end
 
