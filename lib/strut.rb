@@ -1,7 +1,7 @@
-require "strut/swagger_parser"
+require "strut/parser"
 require "strut/slim_client"
-require "strut/slim_response_report_factory"
-require "strut/report_formatter"
+require "strut/report_builder"
+require "strut/report_printer"
 
 module Strut
   def self.run(args)
@@ -10,9 +10,9 @@ module Strut
     port = args.shift.to_i
 
     yaml = File.read(swagger_filename)
-    commands, line_metadata = SwaggerParser.new.parse_yaml(yaml)
+    commands, line_metadata = Parser.new.parse(yaml)
     responses = SlimClient.new(host, port).responses_for_commands(commands)
-    report = SlimResponseReportFactory.new.make_report(responses, line_metadata)
-    ReportFormatter.new(yaml).format_report(report)
+    report = ReportBuilder.new.build(responses, line_metadata)
+    ReportPrinter.new(yaml).print_report(report)
   end
 end

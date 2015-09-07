@@ -1,8 +1,8 @@
 require "strut/report"
 
 module Strut
-  class SlimResponseReportFactory
-    def make_report(responses, line_metadata)
+  class ReportBuilder
+    def build(responses, line_metadata)
       report = Report.new
 
       responses.each do |response|

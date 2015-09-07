@@ -4,12 +4,12 @@ include Term::ANSIColor
 require "strut/report"
 
 module Strut
-  class ReportFormatter
+  class ReportPrinter
     def initialize(lines)
       @lines = lines
     end
 
-    def format_report(report)
+    def print_report(report)
       @lines.each_line.each_with_index do |line, index|
         report_message = report.message_for_line(index+1)
         line.chomp!

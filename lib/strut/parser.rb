@@ -1,7 +1,7 @@
 require "strut/extensions"
 
 module Strut
-  class SwaggerParser
+  class Parser
 
     IMPORT_COMMAND = "import"
     MAKE_COMMAND = "make"
@@ -13,7 +13,7 @@ module Strut
       @line_metadata = {}
     end
 
-    def parse_yaml(yaml)
+    def parse(yaml)
       handler = LineNumberHandler.new
       parser =  Psych::Parser.new(handler)
       handler.parser = parser
