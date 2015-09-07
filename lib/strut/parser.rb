@@ -14,20 +14,29 @@ module Strut
     end
 
     def parse(yaml)
+      parsed_yaml = parse_yaml(yaml)
+      paths = parsed_yaml["paths"]["value"]
+
+      build_commands(paths)
+      [@commands, @line_metadata]
+    end
+
+    def parse_yaml(yaml)
       handler = LineNumberHandler.new
       parser =  Psych::Parser.new(handler)
       handler.parser = parser
       parser.parse(yaml)
-      parsed_yaml = handler.root.to_ruby.first
+      handler.root.to_ruby.first
+    end
 
-      paths = parsed_yaml["paths"]
+    def build_commands(paths)
+      add_import_command
+      extract_scenarios_for_paths(paths)
+    end
 
+    def add_import_command
       (line_metadata, import_command) = make_import_command(0, "specs")
       store_command(line_metadata, import_command)
-
-      extract_scenarios_for_paths(paths["value"])
-
-      [@commands, @line_metadata]
     end
 
     def extract_scenarios_for_paths(paths)
