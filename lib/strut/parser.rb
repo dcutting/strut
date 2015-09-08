@@ -1,11 +1,12 @@
 require "strut/extensions"
 require "strut/slim_command"
+require "strut/slim_command_factory"
 require "strut/document_builder"
 
 module Strut
   class Parser
     def initialize
-      @command_factory = CommandFactory.new
+      @command_factory = SlimCommandFactory.new
       @document_builder = DocumentBuilder.new
     end
 
