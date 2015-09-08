@@ -1,18 +1,19 @@
 require "strut/extensions"
 require "strut/slim_command"
-require "strut/document_metadata"
+require "strut/document_builder"
 
 module Strut
   class Parser
     def initialize
-      @document_metadata = DocumentMetadata.new
+      @command_factory = CommandFactory.new
+      @document_builder = DocumentBuilder.new
     end
 
     def parse(yaml)
       parsed_yaml = parse_yaml(yaml)
       paths = parsed_yaml["paths"]["value"]
       build_commands(paths)
-      @document_metadata
+      @document_builder.document
     end
 
     def parse_yaml(yaml)
@@ -29,9 +30,9 @@ module Strut
     end
 
     def add_import_command
-      line_metadata = LineMetadata.new(0, nil)
-      import_command = ImportCommand.new(@document_metadata.@command_id, "specs")
-      @document_metadata.store_command(line_metadata, import_command)
+      line_metadata = make_line_metadata(0)
+      import_command = @command_factory.make_import_command("specs")
+      @document_builder.append_command(line_metadata, import_command)
     end
 
     def extract_scenarios_for_paths(paths)
@@ -67,7 +68,7 @@ module Strut
       line = value_container["line"]
       value = value_container["value"]
       line_metadata = make_line_metadata(line)
-      slim_command = CallCommand.new(@command_id, instance, "set#{property_name}", value)
+      slim_command = @command_factory.make_call_command(instance, "set#{property_name}", value)
       [line_metadata, slim_command]
     end
 
@@ -79,7 +80,7 @@ module Strut
       line = value_container["line"]
       value = value_container["value"]
       line_metadata = make_line_metadata(line, value)
-      slim_command = CallCommand.new(@command_id, instance, property_name)
+      slim_command = @command_factory.make_call_command(instance, property_name)
       [line_metadata, slim_command]
     end
 
@@ -89,19 +90,19 @@ module Strut
 
     def make_execute_command(line, instance)
       line_metadata = make_line_metadata(line)
-      slim_command = CallCommand.new(@command_id, instance, "execute")
+      slim_command = @command_factory.make_call_command(instance, "execute")
       [line_metadata, slim_command]
     end
 
     def make_status_command(line, instance, status)
       line_metadata = make_line_metadata(line, status)
-      slim_command = CallCommand.new(@command_id, instance, "statusCode")
+      slim_command = @command_factory.make_call_command(instance, "statusCode")
       [line_metadata, slim_command]
     end
 
     def make_make_command(line, instance, class_name)
       line_metadata = make_line_metadata(line)
-      slim_command = MakeCommand.new(@command_id, instance, class_name)
+      slim_command = @command_factory.make_make_command(instance, class_name)
       [line_metadata, slim_command]
     end
 
@@ -109,7 +110,7 @@ module Strut
       stages.each do |stage|
         stage.each do |k, v|
           (line_metadata, slim_command) = block.call(k, v)
-          store_command(line_metadata, slim_command)
+          @document_builder.append_command(line_metadata, slim_command)
         end
       end
     end
@@ -120,7 +121,7 @@ module Strut
       line = params["line"]
 
       (line_metadata, make_command) = make_make_command(line, instance, scenario)
-      store_command(line_metadata, make_command)
+      @document_builder.append_command(line_metadata, make_command)
 
       stages = params["value"]
 
@@ -128,14 +129,14 @@ module Strut
       parse_stages(given_stages) { |k, v| make_given_command(k, v, instance) }
 
       (line_metadata, execute_command) = make_execute_command(line, instance)
-      store_command(line_metadata, execute_command)
+      @document_builder.append_command(line_metadata, execute_command)
 
       then_stages = stages_with_names(stages, ["then"])
       parse_stages(then_stages) { |k, v| make_then_command(k, v, instance) }
 
       unless status.nil?
         (line_metadata, status_command) = make_status_command(line, instance, status)
-        store_command(line_metadata, status_command)
+        @document_builder.append_command(line_metadata, status_command)
       end
     end
   end

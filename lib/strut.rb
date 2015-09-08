@@ -10,9 +10,9 @@ module Strut
     port = args.shift.to_i
 
     yaml = File.read(swagger_filename)
-    document_metadata = Parser.new.parse(yaml)
-    responses = SlimClient.new(host, port).responses_for_commands(document_metadata.commands)
-    report = ReportBuilder.new.build(responses, document_metadata)
+    document = Parser.new.parse(yaml)
+    responses = SlimClient.new(host, port).responses_for_commands(document.commands)
+    report = ReportBuilder.new.build(responses, document)
     ReportPrinter.new(yaml).print_report(report)
   end
 end

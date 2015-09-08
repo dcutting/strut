@@ -1,5 +1,7 @@
 module Strut
   class SlimCommand
+    attr_reader :id
+
     def initialize(id)
       @id = id
     end
@@ -41,7 +43,7 @@ module Strut
   end
 
   class CallCommand < SlimCommand
-    def initialize(id, instance, property, value = nil)
+    def initialize(id, instance, property, value)
       super(id)
       @instance = instance
       @property = property
@@ -66,6 +68,7 @@ module Strut
 
     def next_command_id
       @command_id += 1
+      @command_id
     end
 
     def make_import_command(namespace)
@@ -73,14 +76,14 @@ module Strut
       ImportCommand.new(id, namespace)
     end
 
-    def make_make_command(namespace)
+    def make_make_command(instance, class_name)
       id = next_command_id
       MakeCommand.new(id, instance, class_name)
     end
 
-    def make_call_command(namespace)
+    def make_call_command(instance, property, value = nil)
       id = next_command_id
-      ImportCommand.new(id, namespace)
+      CallCommand.new(id, instance, property, value)
     end
   end
 end
