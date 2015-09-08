@@ -1,4 +1,10 @@
 module Strut
+  REPORT_OK = :ok
+  REPORT_FAIL = :fail
+  REPORT_EXCEPTION = :exception
+
+  ReportMessage = Struct.new(:type, :message)
+
   class Report
     def initialize
       @messages = {}
@@ -12,15 +18,6 @@ module Strut
 
     def message_for_line(line)
       @messages[line]
-    end
-  end
-
-  class ReportMessage
-    attr_reader :type, :message
-
-    def initialize(type, message)
-      @type = type
-      @message = message
     end
   end
 end

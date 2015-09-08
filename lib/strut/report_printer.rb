@@ -27,10 +27,10 @@ module Strut
 
     def print_message_and_line(report_message, line)
       case report_message.type
-      when :exception
+      when REPORT_EXCEPTION
         print yellow { on_black { report_message.message } }, "\n"
         print black { on_yellow { line } }, "\n"
-      when :fail
+      when REPORT_FAIL
         print red { on_white { report_message.message } }, "\n"
         print white { on_red { line } }, "\n"
       else
