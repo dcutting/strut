@@ -8,7 +8,7 @@ module Strut
 
     def next_command_id
       @command_id += 1
-      @command_id
+      @command_id.to_s
     end
 
     def make_import_command(metadata, namespace)
