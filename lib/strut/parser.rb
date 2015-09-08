@@ -1,12 +1,13 @@
 require "strut/extensions"
 require "strut/slim_command"
+require "strut/document_metadata"
 
 module Strut
   class Parser
     def initialize
       @command_id = 0
       @commands = []
-      @line_metadata = {}
+      @document_metadata = DocumentMetadata.new
     end
 
     def parse(yaml)
@@ -14,7 +15,7 @@ module Strut
       paths = parsed_yaml["paths"]["value"]
 
       build_commands(paths)
-      [@commands, @line_metadata]
+      [@commands, @document_metadata]
     end
 
     def parse_yaml(yaml)
@@ -81,9 +82,7 @@ module Strut
     end
 
     def make_line_metadata(line, value = nil)
-      metadata = {:line => line}
-      metadata[:value] = value unless value.nil?
-      metadata
+      LineMetadata.new(line, value)
     end
 
     def stages_with_names(stages, names)
@@ -91,7 +90,7 @@ module Strut
     end
 
     def store_command(line_metadata, slim_command)
-      @line_metadata[@command_id] = line_metadata
+      @document_metadata.set_metadata_for_command_id(@command_id, line_metadata)
       @commands << slim_command
       @command_id += 1
     end
