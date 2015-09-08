@@ -58,4 +58,29 @@ module Strut
       ary
     end
   end
+
+  class CommandFactory
+    def initialize
+      @command_id = 0
+    end
+
+    def next_command_id
+      @command_id += 1
+    end
+
+    def make_import_command(namespace)
+      id = next_command_id
+      ImportCommand.new(id, namespace)
+    end
+
+    def make_make_command(namespace)
+      id = next_command_id
+      MakeCommand.new(id, instance, class_name)
+    end
+
+    def make_call_command(namespace)
+      id = next_command_id
+      ImportCommand.new(id, namespace)
+    end
+  end
 end

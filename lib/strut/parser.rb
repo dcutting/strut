@@ -5,17 +5,14 @@ require "strut/document_metadata"
 module Strut
   class Parser
     def initialize
-      @command_id = 0
-      @commands = []
       @document_metadata = DocumentMetadata.new
     end
 
     def parse(yaml)
       parsed_yaml = parse_yaml(yaml)
       paths = parsed_yaml["paths"]["value"]
-
       build_commands(paths)
-      [@commands, @document_metadata]
+      @document_metadata
     end
 
     def parse_yaml(yaml)
@@ -32,8 +29,9 @@ module Strut
     end
 
     def add_import_command
-      (line_metadata, import_command) = make_import_command(0, "specs")
-      store_command(line_metadata, import_command)
+      line_metadata = LineMetadata.new(0, nil)
+      import_command = ImportCommand.new(@document_metadata.@command_id, "specs")
+      @document_metadata.store_command(line_metadata, import_command)
     end
 
     def extract_scenarios_for_paths(paths)
@@ -73,6 +71,10 @@ module Strut
       [line_metadata, slim_command]
     end
 
+    def make_line_metadata(line, value = nil)
+      LineMetadata.new(line, value)
+    end
+
     def make_then_command(property_name, value_container, instance)
       line = value_container["line"]
       value = value_container["value"]
@@ -81,18 +83,8 @@ module Strut
       [line_metadata, slim_command]
     end
 
-    def make_line_metadata(line, value = nil)
-      LineMetadata.new(line, value)
-    end
-
     def stages_with_names(stages, names)
       names.map { |name| stages[name] }.reject { |stage| stage.nil? }.map { |stage| stage["value"] }
-    end
-
-    def store_command(line_metadata, slim_command)
-      @document_metadata.set_metadata_for_command_id(@command_id, line_metadata)
-      @commands << slim_command
-      @command_id += 1
     end
 
     def make_execute_command(line, instance)
@@ -110,12 +102,6 @@ module Strut
     def make_make_command(line, instance, class_name)
       line_metadata = make_line_metadata(line)
       slim_command = MakeCommand.new(@command_id, instance, class_name)
-      [line_metadata, slim_command]
-    end
-
-    def make_import_command(line, namespace)
-      line_metadata = make_line_metadata(line)
-      slim_command = ImportCommand.new(@command_id, namespace)
       [line_metadata, slim_command]
     end
 
