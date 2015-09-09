@@ -1,6 +1,6 @@
 # Strut
 
-[![Build Status](https://travis-ci.org/dcutting/strut.svg?branch=master)](https://travis-ci.org/dcutting/strut.svg?branch=master)
+[![Build Status](https://travis-ci.org/dcutting/strut.svg?branch=master)](https://travis-ci.org/dcutting/strut)
 
 Acceptance testing with [Swagger](http://swagger.io).
 
