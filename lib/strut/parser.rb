@@ -42,8 +42,9 @@ module Strut
 
     def extract_scenarios_for_node(node_name, node, path_stack)
       if node_name.start_with?(X_SCENARIO_PREFIX)
+        fixture = node_name.gsub(/^#{X_SCENARIO_PREFIX}/, "")
         interaction = @interaction_factory.make_interaction(path_stack)
-        extract_scenario_for_interaction(interaction, node_name, node)
+        extract_scenario_for_interaction(interaction, fixture, node)
       else
         extract_scenarios_for_children(node["value"], path_stack)
       end
@@ -57,20 +58,15 @@ module Strut
       end
     end
 
-    def extract_scenario_for_interaction(interaction, node_name, node)
-      fixture = node_name.gsub(/^#{X_SCENARIO_PREFIX}/, "")
-      make_commands(interaction, fixture, node)
-    end
-
-    def make_commands(interaction, fixture, params)
+    def extract_scenario_for_interaction(interaction, fixture, node)
       instance = "instance" # TODO
 
-      line = params["line"]
+      line = node["line"]
 
       make_command = make_make_command(line, instance, fixture)
       @document_builder.append_command(make_command)
 
-      stages = params["value"]
+      stages = node["value"]
 
       given_stages = stages_with_names(stages, ["given", "when"])
       parse_stages(given_stages) { |k, v| make_given_command(k, v, instance) }
