@@ -32,7 +32,7 @@ module Strut
     end
 
     def append_import_command
-      metadata = CommandMetadata.new(0)
+      metadata = CommandMetadata.new(1)
       import_command = @command_factory.make_import_command(metadata, "specs")
       @document_builder.append_command(import_command)
     end
