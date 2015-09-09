@@ -6,6 +6,8 @@ require "strut/slim_command_factory"
 
 module Strut
   class Parser
+    X_SCENARIO_PREFIX = "x-scenario-"
+
     def initialize
       @command_factory = SlimCommandFactory.new
       @document_builder = DocumentBuilder.new
@@ -39,7 +41,7 @@ module Strut
     end
 
     def extract_scenarios_for_node(node_name, node, path_stack)
-      if node_name.start_with?("x-scenario-")
+      if node_name.start_with?(X_SCENARIO_PREFIX)
         interaction = @interaction_factory.make_interaction(path_stack)
         extract_scenario_for_interaction(interaction, node_name, node)
       else
@@ -56,10 +58,7 @@ module Strut
     end
 
     def extract_scenario_for_interaction(interaction, node_name, node)
-      fixture = node_name.gsub(/^x-scenario-/, "")
-      puts "--- fixture: #{fixture}"
-      puts "    interaction: #{interaction}"
-      puts "    nodes: #{node}"
+      fixture = node_name.gsub(/^#{X_SCENARIO_PREFIX}/, "")
       make_commands(interaction, fixture, node)
     end
 
