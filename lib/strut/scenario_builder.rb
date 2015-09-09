@@ -17,8 +17,9 @@ module Strut
       append_status_command(line, instance, interaction.statusCode)
     end
 
-    def append_make_command(line, instance, fixture)
-      make_command = make_make_command(line, instance, fixture)
+    def append_make_command(line, instance, class_name)
+      metadata = CommandMetadata.new(line)
+      make_command = @command_factory.make_make_command(metadata, instance, class_name)
       @document_builder.append_command(make_command)
     end
 
@@ -28,7 +29,8 @@ module Strut
     end
 
     def append_execute_command(line, instance)
-      execute_command = make_execute_command(line, instance)
+      metadata = CommandMetadata.new(line)
+      execute_command = @command_factory.make_call_command(metadata, instance, "execute")
       @document_builder.append_command(execute_command)
     end
 
@@ -39,7 +41,8 @@ module Strut
 
     def append_status_command(line, instance, statusCode)
       unless statusCode.nil?
-        status_command = make_status_command(line, instance, statusCode)
+        metadata = CommandMetadata.new(line, statusCode)
+        status_command = @command_factory.make_call_command(metadata, instance, "statusCode")
         @document_builder.append_command(status_command)
       end
     end
@@ -56,21 +59,6 @@ module Strut
       value = value_container["value"]
       metadata = CommandMetadata.new(line, value)
       @command_factory.make_call_command(metadata, instance, property_name)
-    end
-
-    def make_execute_command(line, instance)
-      metadata = CommandMetadata.new(line)
-      @command_factory.make_call_command(metadata, instance, "execute")
-    end
-
-    def make_status_command(line, instance, status)
-      metadata = CommandMetadata.new(line, status)
-      @command_factory.make_call_command(metadata, instance, "statusCode")
-    end
-
-    def make_make_command(line, instance, class_name)
-      metadata = CommandMetadata.new(line)
-      @command_factory.make_make_command(metadata, instance, class_name)
     end
 
     def stages_with_names(stages, names)
