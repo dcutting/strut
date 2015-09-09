@@ -4,6 +4,8 @@ require "strut/slim_command_factory"
 require "strut/document_builder"
 
 module Strut
+  Interaction = Struct.new(:uri, :method, :statusCode)
+
   class Parser
     def initialize
       @command_factory = SlimCommandFactory.new
@@ -12,8 +14,8 @@ module Strut
 
     def parse(yaml)
       parsed_yaml = parse_yaml(yaml)
-      paths = parsed_yaml["paths"]["value"]
-      build_commands(paths)
+      append_import_command
+      extract_scenarios(parsed_yaml)
       @document_builder.document
     end
 
@@ -25,31 +27,57 @@ module Strut
       handler.root.to_ruby.first
     end
 
-    def build_commands(paths)
-      add_import_command
-      extract_scenarios_for_paths(paths)
-    end
-
-    def add_import_command
+    def append_import_command
       metadata = CommandMetadata.new(0)
       import_command = @command_factory.make_import_command(metadata, "specs")
       @document_builder.append_command(import_command)
     end
 
-    def extract_scenarios_for_paths(paths)
-      paths.each do |path, path_value|
-        extract_scenarios_for_path(path, path_value)
+    def extract_scenarios(node)
+      paths_key = "paths"
+      extract_scenarios_for_node(paths_key, node[paths_key]["value"], Interaction.new)
+    end
+
+    def extract_scenarios_for_node(node_name, node, interaction)
+      node.each do |child_node_name, child_node|
+        puts ">>> #{child_node_name}"
+        if child_node_name.start_with?("x-scenario-")
+          extract_scenario_for_interaction(interaction, child_node_name, child_node["value"])
+        else
+          case node_name
+          when "paths"
+            interaction.uri = node_name
+          when http_method?(node_name)
+            interaction.method = node_name
+          when "responses"
+            interaction.statusCode = node_name
+          end
+          extract_scenarios_for_node(child_node_name, child_node["value"], interaction)
+        end
       end
     end
 
-    def extract_scenarios_for_path(path, path_value)
-      path_value["value"].each do |method, method_value|
-        extract_scenarios_for_method(path, method, method_value)
+    def http_method?(name)
+      ["get", "post", "put", "delete", "head", "options"].include?(name)
+    end
+
+    def extract_scenario_for_interaction(interaction, node_name, node)
+      fixture = node_name.gsub(/^x-scenario-/, "")
+      puts ">>> fixture: #{fixture}"
+      # make_commands(path, nil, nil, scenario, method_value)
+    end
+
+    def extract_scenarios_for_path(path_uri, path_children)
+      path_children["value"].each do |method_name, method_children|
+        if method_name.start_with?("x-scenario-")
+        else
+          extract_scenarios_for_method(path_uri, method_name, method_children)
+        end
       end
     end
 
-    def extract_scenarios_for_method(path, method, method_value)
-      if method.start_with?("x-scenario-")
+    def extract_scenarios_for_method(path_uri, method_name, method_children)
+      if method_name.start_with?("x-scenario-")
         scenario = method.gsub(/^x-scenario-/, "")
         make_commands(path, nil, nil, scenario, method_value)
       else
