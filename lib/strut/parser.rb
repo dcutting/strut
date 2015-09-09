@@ -1,15 +1,15 @@
 require "strut/extensions"
+require "strut/document_builder"
+require "strut/interaction_factory"
 require "strut/slim_command"
 require "strut/slim_command_factory"
-require "strut/document_builder"
 
 module Strut
-  Interaction = Struct.new(:uri, :method, :statusCode)
-
   class Parser
     def initialize
       @command_factory = SlimCommandFactory.new
       @document_builder = DocumentBuilder.new
+      @interaction_factory = InteractionFactory.new
     end
 
     def parse(yaml)
@@ -34,71 +34,41 @@ module Strut
     end
 
     def extract_scenarios(node)
-      paths_key = "paths"
-      extract_scenarios_for_node(paths_key, node[paths_key]["value"], Interaction.new)
+      wrapped_node = {"value" => node, "line" => 0}
+      extract_scenarios_for_node("", wrapped_node, [])
     end
 
-    def extract_scenarios_for_node(node_name, node, interaction)
-      node.each do |child_node_name, child_node|
-        puts ">>> #{child_node_name}"
-        if child_node_name.start_with?("x-scenario-")
-          extract_scenario_for_interaction(interaction, child_node_name, child_node["value"])
-        else
-          case node_name
-          when "paths"
-            interaction.uri = node_name
-          when http_method?(node_name)
-            interaction.method = node_name
-          when "responses"
-            interaction.statusCode = node_name
-          end
-          extract_scenarios_for_node(child_node_name, child_node["value"], interaction)
-        end
+    def extract_scenarios_for_node(node_name, node, path_stack)
+      if node_name.start_with?("x-scenario-")
+        interaction = @interaction_factory.make_interaction(path_stack)
+        extract_scenario_for_interaction(interaction, node_name, node)
+      else
+        extract_scenarios_for_children(node["value"], path_stack)
       end
     end
 
-    def http_method?(name)
-      ["get", "post", "put", "delete", "head", "options"].include?(name)
+    def extract_scenarios_for_children(node, path_stack)
+      return unless node.respond_to?(:each_pair)
+      node.each_pair do |child_node_name, child_node|
+        next_path_stack = path_stack + [child_node_name]
+        extract_scenarios_for_node(child_node_name.to_s, child_node, next_path_stack)
+      end
     end
 
     def extract_scenario_for_interaction(interaction, node_name, node)
       fixture = node_name.gsub(/^x-scenario-/, "")
-      puts ">>> fixture: #{fixture}"
-      # make_commands(path, nil, nil, scenario, method_value)
+      puts "--- fixture: #{fixture}"
+      puts "    interaction: #{interaction}"
+      puts "    nodes: #{node}"
+      make_commands(interaction, fixture, node)
     end
 
-    def extract_scenarios_for_path(path_uri, path_children)
-      path_children["value"].each do |method_name, method_children|
-        if method_name.start_with?("x-scenario-")
-        else
-          extract_scenarios_for_method(path_uri, method_name, method_children)
-        end
-      end
-    end
-
-    def extract_scenarios_for_method(path_uri, method_name, method_children)
-      if method_name.start_with?("x-scenario-")
-        scenario = method.gsub(/^x-scenario-/, "")
-        make_commands(path, nil, nil, scenario, method_value)
-      else
-        responses = method_value["value"]["responses"]
-        responses["value"].each do |response, response_value|
-          response_value["value"].each do |key, response_value_value|
-            if key.start_with? "x-scenario-"
-              scenario = key.gsub(/^x-scenario-/, "")
-              make_commands(path, method, response, scenario, response_value_value)
-            end
-          end
-        end
-      end
-    end
-
-    def make_commands(path, method, status, scenario, params)
-      instance = "instance_#{@command_id}" # TODO
+    def make_commands(interaction, fixture, params)
+      instance = "instance" # TODO
 
       line = params["line"]
 
-      make_command = make_make_command(line, instance, scenario)
+      make_command = make_make_command(line, instance, fixture)
       @document_builder.append_command(make_command)
 
       stages = params["value"]
@@ -112,8 +82,8 @@ module Strut
       then_stages = stages_with_names(stages, ["then"])
       parse_stages(then_stages) { |k, v| make_then_command(k, v, instance) }
 
-      unless status.nil?
-        status_command = make_status_command(line, instance, status)
+      unless interaction.statusCode.nil?
+        status_command = make_status_command(line, instance, interaction.statusCode)
         @document_builder.append_command(status_command)
       end
     end
