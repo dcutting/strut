@@ -1,5 +1,7 @@
 # Strut
 
+[![Build Status](https://travis-ci.org/dcutting/strut.svg?branch=master)](https://travis-ci.org/dcutting/strut.svg?branch=master)
+
 Acceptance testing with [Swagger](http://swagger.io).
 
 ## Why?
