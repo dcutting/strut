@@ -1,7 +1,8 @@
 require "strut/parser"
-require "strut/slim_client"
 require "strut/report_builder"
 require "strut/report_printer"
+require "strut/slim_client"
+require "strut/version"
 
 module Strut
   def self.run(args)
