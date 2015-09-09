@@ -1,6 +1,22 @@
 # Strut
 
+[![Build Status](https://travis-ci.org/dcutting/strut.svg?branch=master)](https://travis-ci.org/dcutting/strut)
+
 Acceptance testing with [Swagger](http://swagger.io).
+
+## Why?
+
+* Want to specify our web service APIs in Swagger
+	- Because it’s pretty
+	- Because it’s concise
+	- Because it has tools that help you transform it into docs, etc.
+* Want to write automated acceptance tests for our web service APIs
+	- Because we don’t want to manually test it for releases
+	- Because we want to be confident we don’t break it accidentally
+* Don’t want to duplicate the API in the Swagger spec and the test suite
+	- Because the Swagger spec will drift out of sync
+	- Because we’ll need to maintain two different ways of saying similar things
+* Therefore, Strut!
 
 ## Installation
 
