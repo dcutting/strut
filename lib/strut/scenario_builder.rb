@@ -11,6 +11,8 @@ module Strut
       stages = node["value"]
 
       append_make_command(line, instance, fixture)
+      append_uri_command(line, instance, interaction.uri)
+      append_method_command(line, instance, interaction.method)
       append_given_commands(stages, instance)
       append_execute_command(line, instance)
       append_then_commands(stages, instance)
@@ -21,6 +23,22 @@ module Strut
       metadata = CommandMetadata.new(line)
       make_command = @command_factory.make_make_command(metadata, instance, class_name)
       @document_builder.append_command(make_command)
+    end
+
+    def append_uri_command(line, instance, uri)
+      if uri
+        metadata = CommandMetadata.new(line)
+        path_command = make_set_command(line, instance, "uri", uri)
+        @document_builder.append_command(path_command)
+      end
+    end
+
+    def append_method_command(line, instance, method)
+      if method
+        metadata = CommandMetadata.new(line)
+        method_command = make_set_command(line, instance, "method", method)
+        @document_builder.append_command(method_command)
+      end
     end
 
     def append_given_commands(stages, instance)
@@ -40,7 +58,7 @@ module Strut
     end
 
     def append_status_command(line, instance, statusCode)
-      unless statusCode.nil?
+      if statusCode
         metadata = CommandMetadata.new(line, statusCode)
         status_command = @command_factory.make_call_command(metadata, instance, "statusCode")
         @document_builder.append_command(status_command)
@@ -50,8 +68,12 @@ module Strut
     def make_given_command(property_name, value_container, instance)
       line = value_container["line"]
       value = value_container["value"]
+      make_set_command(line, instance, property_name, value)
+    end
+
+    def make_set_command(line, instance, name, value)
       metadata = CommandMetadata.new(line)
-      @command_factory.make_call_command(metadata, instance, "set#{property_name}", value)
+      @command_factory.make_call_command(metadata, instance, "set#{name}", value)
     end
 
     def make_then_command(property_name, value_container, instance)
