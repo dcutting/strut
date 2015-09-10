@@ -51,7 +51,7 @@ module Strut
       super(id, metadata)
       @instance = instance
       @property = property
-      @value = value.to_s
+      @value = value
     end
 
     def command
