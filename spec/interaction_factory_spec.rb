@@ -19,13 +19,19 @@ describe InteractionFactory do
     expect(expected).to eq(actual)
   end
 
+  it 'does not populate the URI if it is an x- tag' do
+    actual = @sut.make_interaction(["paths", "x-scenario-configure"])
+    expected = Interaction.new
+    expect(expected).to eq(actual)
+  end
+
   it 'populates the URI and method' do
     actual = @sut.make_interaction(["paths", "/hello", "post"])
     expected = Interaction.new("/hello", "post")
     expect(expected).to eq(actual)
   end
 
-  it 'does not populates the method if it is an x- tag' do
+  it 'does not populate the method if it is an x- tag' do
     actual = @sut.make_interaction(["paths", "/hello", "x-scenario-configure"])
     expected = Interaction.new("/hello")
     expect(expected).to eq(actual)
