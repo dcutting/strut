@@ -8,31 +8,32 @@ describe InteractionFactory do
   end
 
   it 'makes an empty interaction for an empty path stack' do
-    interaction = @sut.make_interaction([])
-    expect(Interaction.new).to eq(interaction)
+    actual = @sut.make_interaction([])
+    expected = Interaction.new
+    expect(Interaction.new).to eq(actual)
   end
 
   it 'populates the URI' do
-    interaction = @sut.make_interaction(["paths", "/hello"])
+    actual = @sut.make_interaction(["paths", "/hello"])
     expected = Interaction.new("/hello")
-    expect(expected).to eq(interaction)
+    expect(expected).to eq(actual)
   end
 
   it 'populates the URI and method' do
-    interaction = @sut.make_interaction(["paths", "/hello", "post"])
+    actual = @sut.make_interaction(["paths", "/hello", "post"])
     expected = Interaction.new("/hello", "post")
-    expect(expected).to eq(interaction)
+    expect(expected).to eq(actual)
   end
 
   it 'does not populates the method if it is an x- tag' do
-    interaction = @sut.make_interaction(["paths", "/hello", "x-scenario-configure"])
+    actual = @sut.make_interaction(["paths", "/hello", "x-scenario-configure"])
     expected = Interaction.new("/hello")
-    expect(expected).to eq(interaction)
+    expect(expected).to eq(actual)
   end
 
   it 'populates the URI, method and status code' do
-    interaction = @sut.make_interaction(["paths", "/hello", "post", "responses", "418"])
+    actual = @sut.make_interaction(["paths", "/hello", "post", "responses", "418"])
     expected = Interaction.new("/hello", "post", "418")
-    expect(expected).to eq(interaction)
+    expect(expected).to eq(actual)
   end
 end
