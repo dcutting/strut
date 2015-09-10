@@ -42,4 +42,10 @@ describe InteractionFactory do
     expected = Interaction.new("/hello", "post", "418")
     expect(expected).to eq(actual)
   end
+
+  it 'does not populate the status code if it is an x- tag' do
+    actual = @sut.make_interaction(["paths", "/hello", "post", "responses", "x-scenario-configure"])
+    expected = Interaction.new("/hello", "post")
+    expect(expected).to eq(actual)
+  end
 end

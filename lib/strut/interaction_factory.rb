@@ -12,7 +12,7 @@ module Strut
       interaction.method = path_stack[2] unless extension?(path_stack[2])
 
       if path_stack[3] == "responses"
-        interaction.statusCode = path_stack[4]
+        interaction.statusCode = path_stack[4] unless extension?(path_stack[4])
       end
 
       interaction
