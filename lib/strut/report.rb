@@ -1,26 +1,35 @@
 module Strut
+  ANNOTATION_OK = :ok
+  ANNOTATION_FAIL = :fail
+  ANNOTATION_EXCEPTION = :exception
+
+  Annotation = Struct.new(:type, :message)
+
   class Report
     def initialize
-      @messages = {}
+      @annotations = {}
     end
 
-    def add_message_for_line(line, type, message = "")
-      if @messages[line].nil? or @messages[line].type == :ok
-        @messages[line] = ReportMessage.new(type, message)
+    def add_ok_for_line(line)
+      add_annotation_for_line(line, ANNOTATION_OK)
+    end
+
+    def add_fail_for_line(line, message)
+      add_annotation_for_line(line, ANNOTATION_FAIL, message)
+    end
+
+    def add_exception_for_line(line, message)
+      add_annotation_for_line(line, ANNOTATION_EXCEPTION, message)
+    end
+
+    def add_annotation_for_line(line, type, message = "")
+      if @annotations[line].nil? or @annotations[line].type == :ok
+        @annotations[line] = Annotation.new(type, message)
       end
     end
 
-    def message_for_line(line)
-      @messages[line]
-    end
-  end
-
-  class ReportMessage
-    attr_reader :type, :message
-
-    def initialize(type, message)
-      @type = type
-      @message = message
+    def annotation_for_line(line)
+      @annotations[line]
     end
   end
 end

@@ -2,27 +2,37 @@ require "strut/report"
 
 module Strut
   class ReportBuilder
-    def build(responses, document_metadata)
+    def build(responses, document)
       report = Report.new
-
       responses.each do |response|
-        command_id, result = *response
-        command_id = command_id.to_i
-        metadata = document_metadata.metadata_for_command_id(command_id)
-        if result =~ /^__EXCEPTION__:message:(.+)/
-          report.add_message_for_line(metadata.line, :exception, $1)
-        else
-          matched = metadata.expected_value.to_s == result.to_s
-          if metadata.expected_value && !matched
-            error_message = "Expected #{metadata.expected_value} but got #{result.to_s}"
-            report.add_message_for_line(metadata.line, :fail, error_message)
-          else
-            report.add_message_for_line(metadata.line, :ok)
-          end
-        end
+        handle_response(response, document, report)
       end
-
       report
+    end
+
+    def handle_response(response, document, report)
+      command_id, result = *response
+      metadata = document.metadata_for_command_id(command_id)
+      process_result(result, metadata, report)
+    end
+
+    def process_result(result, metadata, report)
+      if exception_message = exceptional_result?(result)
+        report.add_exception_for_line(metadata.line, exception_message)
+      elsif failed_result?(result, metadata)
+        fail_message = "Expected #{metadata.expected_value} but got #{result}"
+        report.add_fail_for_line(metadata.line, fail_message)
+      else
+        report.add_ok_for_line(metadata.line)
+      end
+    end
+
+    def exceptional_result?(result)
+      result =~ /^__EXCEPTION__:message:(.+)/ ? $1 : nil
+    end
+
+    def failed_result?(result, metadata)
+      metadata.expected_value && metadata.expected_value != result
     end
   end
 end

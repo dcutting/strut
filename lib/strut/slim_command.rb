@@ -1,7 +1,13 @@
 module Strut
+  CommandMetadata = Struct.new(:line, :expected_value)
+
   class SlimCommand
-    def initialize(id)
+    attr_reader :id
+    attr_reader :metadata
+
+    def initialize(id, metadata)
       @id = id
+      @metadata = metadata
     end
 
     def to_a
@@ -10,8 +16,8 @@ module Strut
   end
 
   class ImportCommand < SlimCommand
-    def initialize(id, namespace)
-      super(id)
+    def initialize(id, metadata, namespace)
+      super(id, metadata)
       @namespace = namespace
     end
 
@@ -25,8 +31,8 @@ module Strut
   end
 
   class MakeCommand < SlimCommand
-    def initialize(id, instance, class_name)
-      super(id)
+    def initialize(id, metadata, instance, class_name)
+      super(id, metadata)
       @instance = instance
       @class_name = class_name
     end
@@ -41,8 +47,8 @@ module Strut
   end
 
   class CallCommand < SlimCommand
-    def initialize(id, instance, property, value = nil)
-      super(id)
+    def initialize(id, metadata, instance, property, value)
+      super(id, metadata)
       @instance = instance
       @property = property
       @value = value

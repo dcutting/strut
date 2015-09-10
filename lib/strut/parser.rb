@@ -1,21 +1,26 @@
 require "strut/extensions"
+require "strut/document_builder"
+require "strut/interaction_factory"
+require "strut/scenario_builder"
 require "strut/slim_command"
-require "strut/document_metadata"
+require "strut/slim_command_factory"
 
 module Strut
   class Parser
+    X_SCENARIO_PREFIX = "x-scenario-"
+
     def initialize
-      @command_id = 0
-      @commands = []
-      @document_metadata = DocumentMetadata.new
+      @command_factory = SlimCommandFactory.new
+      @document_builder = DocumentBuilder.new
+      @interaction_factory = InteractionFactory.new
+      @scenario_builder = ScenarioBuilder.new(@document_builder, @command_factory)
     end
 
     def parse(yaml)
       parsed_yaml = parse_yaml(yaml)
-      paths = parsed_yaml["paths"]["value"]
-
-      build_commands(paths)
-      [@commands, @document_metadata]
+      append_import_command
+      extract_scenarios(parsed_yaml)
+      @document_builder.document
     end
 
     def parse_yaml(yaml)
@@ -26,130 +31,32 @@ module Strut
       handler.root.to_ruby.first
     end
 
-    def build_commands(paths)
-      add_import_command
-      extract_scenarios_for_paths(paths)
+    def append_import_command
+      metadata = CommandMetadata.new(1)
+      import_command = @command_factory.make_import_command(metadata, "specs")
+      @document_builder.append_command(import_command)
     end
 
-    def add_import_command
-      (line_metadata, import_command) = make_import_command(0, "specs")
-      store_command(line_metadata, import_command)
+    def extract_scenarios(node)
+      wrapped_node = {"value" => node, "line" => 0}
+      extract_scenarios_for_node("", wrapped_node, [])
     end
 
-    def extract_scenarios_for_paths(paths)
-      paths.each do |path, path_value|
-        extract_scenarios_for_path(path, path_value)
-      end
-    end
-
-    def extract_scenarios_for_path(path, path_value)
-      path_value["value"].each do |method, method_value|
-        extract_scenarios_for_method(path, method, method_value)
-      end
-    end
-
-    def extract_scenarios_for_method(path, method, method_value)
-      if method.start_with?("x-scenario-")
-        scenario = method.gsub(/^x-scenario-/, "")
-        make_slim_commands(path, nil, nil, scenario, method_value)
+    def extract_scenarios_for_node(node_name, node, path_stack)
+      if node_name.start_with?(X_SCENARIO_PREFIX)
+        fixture = node_name.gsub(/^#{X_SCENARIO_PREFIX}/, "")
+        interaction = @interaction_factory.make_interaction(path_stack)
+        @scenario_builder.extract_scenario_for_interaction(interaction, fixture, node)
       else
-        responses = method_value["value"]["responses"]
-        responses["value"].each do |response, response_value|
-          response_value["value"].each do |key, response_value_value|
-            if key.start_with? "x-scenario-"
-              scenario = key.gsub(/^x-scenario-/, "")
-              make_slim_commands(path, method, response, scenario, response_value_value)
-            end
-          end
-        end
+        extract_scenarios_for_children(node["value"], path_stack)
       end
     end
 
-    def make_given_command(property_name, value_container, instance)
-      line = value_container["line"]
-      value = value_container["value"]
-      line_metadata = make_line_metadata(line)
-      slim_command = CallCommand.new(@command_id, instance, "set#{property_name}", value)
-      [line_metadata, slim_command]
-    end
-
-    def make_then_command(property_name, value_container, instance)
-      line = value_container["line"]
-      value = value_container["value"]
-      line_metadata = make_line_metadata(line, value)
-      slim_command = CallCommand.new(@command_id, instance, property_name)
-      [line_metadata, slim_command]
-    end
-
-    def make_line_metadata(line, value = nil)
-      LineMetadata.new(line, value)
-    end
-
-    def stages_with_names(stages, names)
-      names.map { |name| stages[name] }.reject { |stage| stage.nil? }.map { |stage| stage["value"] }
-    end
-
-    def store_command(line_metadata, slim_command)
-      @document_metadata.set_metadata_for_command_id(@command_id, line_metadata)
-      @commands << slim_command
-      @command_id += 1
-    end
-
-    def make_execute_command(line, instance)
-      line_metadata = make_line_metadata(line)
-      slim_command = CallCommand.new(@command_id, instance, "execute")
-      [line_metadata, slim_command]
-    end
-
-    def make_status_command(line, instance, status)
-      line_metadata = make_line_metadata(line, status)
-      slim_command = CallCommand.new(@command_id, instance, "statusCode")
-      [line_metadata, slim_command]
-    end
-
-    def make_make_command(line, instance, class_name)
-      line_metadata = make_line_metadata(line)
-      slim_command = MakeCommand.new(@command_id, instance, class_name)
-      [line_metadata, slim_command]
-    end
-
-    def make_import_command(line, namespace)
-      line_metadata = make_line_metadata(line)
-      slim_command = ImportCommand.new(@command_id, namespace)
-      [line_metadata, slim_command]
-    end
-
-    def parse_stages(stages, &block)
-      stages.each do |stage|
-        stage.each do |k, v|
-          (line_metadata, slim_command) = block.call(k, v)
-          store_command(line_metadata, slim_command)
-        end
-      end
-    end
-
-    def make_slim_commands(path, method, status, scenario, params)
-      instance = "instance_#{@command_id}"
-
-      line = params["line"]
-
-      (line_metadata, make_command) = make_make_command(line, instance, scenario)
-      store_command(line_metadata, make_command)
-
-      stages = params["value"]
-
-      given_stages = stages_with_names(stages, ["given", "when"])
-      parse_stages(given_stages) { |k, v| make_given_command(k, v, instance) }
-
-      (line_metadata, execute_command) = make_execute_command(line, instance)
-      store_command(line_metadata, execute_command)
-
-      then_stages = stages_with_names(stages, ["then"])
-      parse_stages(then_stages) { |k, v| make_then_command(k, v, instance) }
-
-      unless status.nil?
-        (line_metadata, status_command) = make_status_command(line, instance, status)
-        store_command(line_metadata, status_command)
+    def extract_scenarios_for_children(node, path_stack)
+      return unless node.respond_to?(:each_pair)
+      node.each_pair do |child_node_name, child_node|
+        next_path_stack = path_stack + [child_node_name]
+        extract_scenarios_for_node(child_node_name.to_s, child_node, next_path_stack)
       end
     end
   end

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Strut do
   it 'has a version number' do

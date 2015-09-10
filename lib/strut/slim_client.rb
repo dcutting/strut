@@ -18,17 +18,21 @@ module Strut
       decode_response(response)
     end
 
-    def prepare_socket
-      socket = TCPSocket.open(@host, @port)
-      _version = socket.gets  # Read and ignore the Slim version number from the server.
-      socket
-    end
-
     def encode_commands(commands)
       flattened_commands = commands.map { |c| c.to_a }
       serialised_commands = ListSerializer.serialize(flattened_commands)
       length = ListSerializer.length_string(serialised_commands.length)
       "#{length}#{serialised_commands}"
+    end
+
+    def prepare_socket
+      socket = TCPSocket.open(@host, @port)
+      read_and_ignore_version(socket)
+      socket
+    end
+
+    def read_and_ignore_version(socket)
+      socket.gets
     end
 
     def write_commands(socket, commands)
