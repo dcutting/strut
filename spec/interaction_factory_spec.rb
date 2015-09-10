@@ -24,6 +24,12 @@ describe InteractionFactory do
     expect(expected).to eq(interaction)
   end
 
+  it 'does not populates the method if it is an x- tag' do
+    interaction = @sut.make_interaction(["paths", "/hello", "x-scenario-configure"])
+    expected = Interaction.new("/hello")
+    expect(expected).to eq(interaction)
+  end
+
   it 'populates the URI, method and status code' do
     interaction = @sut.make_interaction(["paths", "/hello", "post", "responses", "418"])
     expected = Interaction.new("/hello", "post", "418")
