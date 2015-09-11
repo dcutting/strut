@@ -8,7 +8,7 @@ module Strut
 
     def metadata_for_command_id(id)
       command = @commands.find { |c| c.id == id }
-      command.metadata
+      command ? command.metadata : nil
     end
   end
 end

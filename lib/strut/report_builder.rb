@@ -12,8 +12,16 @@ module Strut
 
     def handle_response(response, document, report)
       command_id, result = *response
-      metadata = document.metadata_for_command_id(command_id)
-      process_result(result, metadata, report)
+      if command_id == "error"
+        report.add_fail_for_line(1, result.to_s)
+      else
+        metadata = document.metadata_for_command_id(command_id)
+        if metadata
+          process_result(result, metadata, report)
+        else
+          report.add_fail_for_line(1, "unexpected response from Slim: #{response.inspect}")
+        end
+      end
     end
 
     def process_result(result, metadata, report)
