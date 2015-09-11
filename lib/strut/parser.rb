@@ -9,7 +9,8 @@ module Strut
   class Parser
     X_SCENARIO_PREFIX = "x-scenario-"
 
-    def initialize
+    def initialize(namespace)
+      @namespace = namespace
       @command_factory = SlimCommandFactory.new
       @document_builder = DocumentBuilder.new
       @interaction_factory = InteractionFactory.new
@@ -33,7 +34,7 @@ module Strut
 
     def append_import_command
       metadata = CommandMetadata.new(1)
-      import_command = @command_factory.make_import_command(metadata, "specs")
+      import_command = @command_factory.make_import_command(metadata, @namespace)
       @document_builder.append_command(import_command)
     end
 

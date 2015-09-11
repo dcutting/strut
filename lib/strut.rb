@@ -16,7 +16,7 @@ module Strut
       config = read_config(config_file)
 
       yaml = File.read(config.swagger)
-      document = Parser.new.parse(yaml)
+      document = Parser.new(config.namespace).parse(yaml)
 
       responses = get_responses(config, document)
       exit if responses.nil?
