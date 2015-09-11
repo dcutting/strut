@@ -7,38 +7,61 @@ Acceptance testing with [Swagger](http://swagger.io).
 ## Why?
 
 * Want to specify our web service APIs in Swagger
-	- Because it’s pretty
-	- Because it’s concise
-	- Because it has tools that help you transform it into docs, etc.
+    - Because it’s pretty
+    - Because it’s concise
+    - Because it has tools that help you transform it into docs, etc.
 * Want to write automated acceptance tests for our web service APIs
-	- Because we don’t want to manually test it for releases
-	- Because we want to be confident we don’t break it accidentally
+    - Because we don’t want to manually test it for releases
+    - Because we want to be confident we don’t break it accidentally
 * Don’t want to duplicate the API in the Swagger spec and the test suite
-	- Because the Swagger spec will drift out of sync
-	- Because we’ll need to maintain two different ways of saying similar things
+    - Because the Swagger spec will drift out of sync
+    - Because we’ll need to maintain two different ways of saying similar things
 * Therefore, Strut!
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'strut'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
+Strut is a command-line tool installed via [RubyGems](https://rubygems.org):
 
     $ gem install strut
+
+Then run it from any directory containing a .strut.yml configuration file:
+
+    $ strut
+
+## .strut.yml configuration file
+
+You need a .strut.yml configuration file in the directory where you run strut (or you can specify a path to one as the only argument to strut). That file should look like this:
+
+    swagger:
+      my_service.yaml
+    runner:
+      Runner.exe -r fitSharp.Slim.Service.Runner,fitsharp.dll MyService.Specs.dll 9011
+    host:
+      localhost
+    port:
+      9011
+    max_attempts:
+      3
+    namespace:
+      Specs
+
+The `runner` property is a command that runs the Slim server and attaches to your system under test. Strut will automatically run this for you, and kill it when the tests complete.
 
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+
+### Windows
+
+* Install Ruby using [RubyInstaller](http://rubyinstaller.org)
+* Install [gitbash](https://git-scm.com/download/win)
+* gem install bundler
+* git clone git@github.com:dcutting/strut.git
+* cd strut
+* bin/setup
+* bundle exec ruby exe/strut .strut.yml
 
 ## Contributing
 
