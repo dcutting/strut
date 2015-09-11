@@ -26,7 +26,7 @@ module Strut
 
     def store_values(yaml, config_path)
       @swagger = swagger_path(yaml, config_path)
-      @runner = extract_value(yaml, "runner")
+      @runner = extract_optional_value(yaml, "runner")
       @host = extract_value(yaml, "host")
       @port = extract_int_value(yaml, "port")
       @max_attempts = extract_int_value(yaml, "max_attempts")
@@ -41,10 +41,14 @@ module Strut
       swagger_path.to_s
     end
 
-    def extract_value(yaml, name)
+    def extract_optional_value(yaml, name)
+      extract_value(yaml, name, true)
+    end
+
+    def extract_value(yaml, name, optional = false)
       value = yaml[name]
       value = value["value"] unless value.nil?
-      throw "No '#{name}' specified." if value.nil?
+      throw "No '#{name}' specified." if value.nil? and !optional
       value
     end
 

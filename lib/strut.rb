@@ -35,14 +35,14 @@ module Strut
     end
 
     def get_responses(config, document)
-      pid = spawn(config.runner)
+      pid = config.runner ? spawn(config.runner) : nil
       begin
         client = SlimClient.new(config.host, config.port, config.max_attempts)
         return client.responses_for_commands(document.commands)
       rescue => e
         puts e
       ensure
-        Process.kill("KILL", pid)
+        Process.kill("KILL", pid) unless pid.nil?
       end
     end
   end
