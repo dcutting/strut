@@ -37,7 +37,8 @@ module Strut
     def get_responses(config, document)
       pid = spawn(config.runner)
       begin
-        return SlimClient.new(config.host, config.port, config.max_attempts).responses_for_commands(document.commands)
+        client = SlimClient.new(config.host, config.port, config.max_attempts)
+        return client.responses_for_commands(document.commands)
       rescue => e
         puts e
       ensure
