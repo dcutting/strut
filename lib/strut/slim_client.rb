@@ -3,16 +3,16 @@ require "rubyslim/ruby_slim"
 
 module Strut
   class SlimClient
-    attr_reader :host, :port
-
-    def initialize(host, port)
+    def initialize(host, port, max_attempts)
       @host = host
       @port = port
+      @max_attempts = max_attempts
     end
 
     def responses_for_commands(commands)
       encoded_commands = encode_commands(commands)
       socket = prepare_socket
+      read_and_ignore_version(socket)
       write_commands(socket, encoded_commands)
       response = read_response(socket)
       decode_response(response)
@@ -26,8 +26,17 @@ module Strut
     end
 
     def prepare_socket
-      socket = TCPSocket.open(@host, @port)
-      read_and_ignore_version(socket)
+      socket = nil
+      attempts = 0
+      while socket.nil? and attempts < @max_attempts do
+        begin
+          socket = TCPSocket.open(@host, @port)
+        rescue
+          attempts += 1
+          sleep(2)
+        end
+      end
+      throw "Could not connect to Slim server." if socket.nil?
       socket
     end
 
