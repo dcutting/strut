@@ -73,7 +73,7 @@ module Strut
 
     def make_set_command(line, instance, name, value)
       metadata = CommandMetadata.new(line)
-      @command_factory.make_call_command(metadata, instance, "set#{name}", value)
+      @command_factory.make_call_command(metadata, instance, "set_#{name}", value)
     end
 
     def make_then_command(property_name, value_container, instance)

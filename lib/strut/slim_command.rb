@@ -13,6 +13,10 @@ module Strut
     def to_a
       [@id, command]
     end
+
+    def to_s
+      sprintf("[%3d]", @id)
+    end
   end
 
   class ImportCommand < SlimCommand
@@ -27,6 +31,10 @@ module Strut
 
     def to_a
       super + [@namespace]
+    end
+
+    def to_s
+      "#{super} import #{@namespace}"
     end
   end
 
@@ -43,6 +51,10 @@ module Strut
 
     def to_a
       super + [@instance, @class_name]
+    end
+
+    def to_s
+      "#{super} #{@instance} = #{@class_name}()"
     end
   end
 
@@ -62,6 +74,10 @@ module Strut
       ary = super + [@instance, @property]
       ary << @value unless @value.nil?
       ary
+    end
+
+    def to_s
+      "#{super} #{@instance}.#{@property}(#{@value})"
     end
   end
 end
