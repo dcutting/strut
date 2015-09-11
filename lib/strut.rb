@@ -41,7 +41,7 @@ module Strut
       rescue => e
         puts e
       ensure
-        Process.kill("HUP", pid)
+        Process.kill("KILL", pid)
       end
     end
   end
