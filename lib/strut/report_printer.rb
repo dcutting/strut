@@ -40,13 +40,13 @@ module Strut
     end
 
     def print_exception_line(message, line)
-      print yellow { on_black { message } }, "\n"
       print black { on_yellow { line } }, "\n"
+      print yellow { on_black { message } }, "\n"
     end
 
     def print_fail_line(message, line)
-      print red { on_white { message } }, "\n"
       print white { on_red { line } }, "\n"
+      print red { on_white { message } }, "\n"
     end
 
     def print_ok_line(line)
