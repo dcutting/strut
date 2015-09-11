@@ -54,7 +54,7 @@ module Strut
     end
 
     def to_s
-      "#{super} #{@instance} = #{@class_name}()"
+      "#{super} #{@instance} = new #{@class_name}"
     end
   end
 
