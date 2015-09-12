@@ -15,7 +15,7 @@ module Strut
     end
 
     def to_s
-      sprintf("[%3d]", @id)
+      sprintf("[%2d]", @id)
     end
   end
 
