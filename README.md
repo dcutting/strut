@@ -45,7 +45,7 @@ You need a .strut.yml configuration file in the directory where you run strut (o
     namespace:
       Specs
 
-The `runner` property is a command that runs the Slim server and attaches to your system under test. Strut will automatically run this for you, and kill it when the tests complete.
+The `runner` property is a command that runs the Slim server and attaches to your system under test. Strut will automatically run this for you, and kill it when the tests complete. This is an optional parameter. If omitted, Strut will still attempt to connect to the provided host and port.
 
 ## Development
 
