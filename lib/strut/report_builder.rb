@@ -40,7 +40,7 @@ module Strut
     end
 
     def failed_result?(result, metadata)
-      metadata.expected_value && metadata.expected_value != result
+      metadata.expected_value && metadata.expected_value.to_s != result.to_s
     end
   end
 end
