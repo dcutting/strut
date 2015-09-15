@@ -4,6 +4,8 @@
 
 Acceptance testing with [Swagger](http://swagger.io).
 
+Rather than testing your web service through the API (and therefore requiring your whole stack to be up and running with sample data), Strut uses [Slim](http://www.fitnesse.org/FitNesse.UserGuide.WritingAcceptanceTests.SliM.SlimProtocol) and fixture code. This lets you mock out databases and other external systems, while still covering the major parts of your web service API.
+
 ## Why?
 
 * Want to specify our web service APIs in Swagger
@@ -45,7 +47,7 @@ You need a .strut.yml configuration file in the directory where you run strut (o
     namespace:
       Specs
 
-The `runner` property is a command that runs the Slim server and attaches to your system under test. Strut will automatically run this for you, and kill it when the tests complete. This is an optional parameter. If omitted, Strut will still attempt to connect to the provided host and port.
+The `runner` property is a command that runs the Slim server and attaches to your system under test. Strut will automatically run this for you, and kill it when the tests complete. This is an optional parameter. If omitted, Strut will still attempt to connect to the provided host and port, but you will need to manually ensure the Slim server is running.
 
 ## Development
 
