@@ -6,16 +6,26 @@ module Strut
     end
 
     def extract_scenario_for_interaction(interaction, fixture, node)
-      instance = "instance" # TODO
+      instance = "instance"
       line = node["line"]
-      stages = node["value"]
+      scenario_definitions_for_node(node).each do |scenario_stages|
+        make_scenario(line, instance, fixture, interaction, scenario_stages)
+      end
+    end
 
+    def scenario_definitions_for_node(node)
+      raw_scenarios = node["value"]
+      raw_scenarios = [raw_scenarios] if node["value"].respond_to?(:each_pair)
+      raw_scenarios
+    end
+
+    def make_scenario(line, instance, fixture, interaction, scenario_stages)
       append_make_command(line, instance, fixture)
       append_uri_command(line, instance, interaction.uri)
       append_method_command(line, instance, interaction.method)
-      append_given_commands(stages, instance)
+      append_given_commands(scenario_stages, instance)
       append_execute_command(line, instance)
-      append_then_commands(stages, instance)
+      append_then_commands(scenario_stages, instance)
       append_status_command(line, instance, interaction.statusCode)
     end
 
