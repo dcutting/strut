@@ -15,7 +15,7 @@ module Strut
 
     def scenario_definitions_for_node(node)
       raw_scenarios = node["value"]
-      raw_scenarios = [raw_scenarios] if node["value"].respond_to?(:each_pair)
+      raw_scenarios = [raw_scenarios] if raw_scenarios.respond_to?(:each_pair)
       raw_scenarios
     end
 
