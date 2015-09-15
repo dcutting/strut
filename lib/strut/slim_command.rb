@@ -1,5 +1,5 @@
 module Strut
-  CommandMetadata = Struct.new(:line, :expected_value)
+  CommandMetadata = Struct.new(:scenario_number, :line, :expected_value)
 
   class SlimCommand
     attr_reader :id

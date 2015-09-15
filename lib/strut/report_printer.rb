@@ -14,6 +14,11 @@ module Strut
         annotation = report.annotation_for_line(index+1)
         print_line_with_annotation(line.chomp, annotation)
       end
+      puts
+      print "#{report.number_scenarios} scenarios ("
+      print green { "#{report.number_passed} passed" }, ", "
+      print red { "#{report.number_failed} failed" }, ", "
+      print yellow { "#{report.number_skipped} skipped" }, ")\n"
     end
 
     def print_line_with_annotation(line, annotation)

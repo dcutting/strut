@@ -5,12 +5,14 @@ module Strut
       @command_factory = command_factory
     end
 
-    def extract_scenario_for_interaction(interaction, fixture, node)
+    def extract_scenarios_for_interaction(scenario_number, interaction, fixture, node)
       instance = "instance"
       line = node["line"]
       scenario_definitions_for_node(node).each do |scenario_stages|
-        make_scenario(line, instance, fixture, interaction, scenario_stages)
+        make_scenario(scenario_number, line, instance, fixture, interaction, scenario_stages)
+        scenario_number += 1
       end
+      scenario_number
     end
 
     def scenario_definitions_for_node(node)
@@ -19,77 +21,77 @@ module Strut
       raw_scenarios
     end
 
-    def make_scenario(line, instance, fixture, interaction, scenario_stages)
-      append_make_command(line, instance, fixture)
-      append_uri_command(line, instance, interaction.uri)
-      append_method_command(line, instance, interaction.method)
-      append_given_commands(scenario_stages, instance)
-      append_execute_command(line, instance)
-      append_then_commands(scenario_stages, instance)
-      append_status_command(line, instance, interaction.statusCode)
+    def make_scenario(scenario_number, line, instance, fixture, interaction, scenario_stages)
+      append_make_command(scenario_number, line, instance, fixture)
+      append_uri_command(scenario_number, line, instance, interaction.uri)
+      append_method_command(scenario_number, line, instance, interaction.method)
+      append_given_commands(scenario_number, scenario_stages, instance)
+      append_execute_command(scenario_number, line, instance)
+      append_then_commands(scenario_number, scenario_stages, instance)
+      append_status_command(scenario_number, line, instance, interaction.statusCode)
     end
 
-    def append_make_command(line, instance, class_name)
-      metadata = CommandMetadata.new(line)
+    def append_make_command(scenario_number, line, instance, class_name)
+      metadata = CommandMetadata.new(scenario_number, line)
       make_command = @command_factory.make_make_command(metadata, instance, class_name)
       @document_builder.append_command(make_command)
     end
 
-    def append_uri_command(line, instance, uri)
+    def append_uri_command(scenario_number, line, instance, uri)
       if uri
-        metadata = CommandMetadata.new(line)
-        path_command = make_set_command(line, instance, "uri", uri)
+        metadata = CommandMetadata.new(scenario_number, line)
+        path_command = make_set_command(scenario_number, line, instance, "uri", uri)
         @document_builder.append_command(path_command)
       end
     end
 
-    def append_method_command(line, instance, method)
+    def append_method_command(scenario_number, line, instance, method)
       if method
-        metadata = CommandMetadata.new(line)
-        method_command = make_set_command(line, instance, "method", method)
+        metadata = CommandMetadata.new(scenario_number, line)
+        method_command = make_set_command(scenario_number, line, instance, "method", method)
         @document_builder.append_command(method_command)
       end
     end
 
-    def append_given_commands(stages, instance)
+    def append_given_commands(scenario_number, stages, instance)
       given_stages = stages_with_names(stages, ["given", "when"])
-      parse_stages(given_stages) { |k, v| make_given_command(k, v, instance) }
+      parse_stages(given_stages) { |k, v| make_given_command(scenario_number, k, v, instance) }
     end
 
-    def append_execute_command(line, instance)
-      metadata = CommandMetadata.new(line)
+    def append_execute_command(scenario_number, line, instance)
+      metadata = CommandMetadata.new(scenario_number, line)
       execute_command = @command_factory.make_call_command(metadata, instance, "execute")
       @document_builder.append_command(execute_command)
     end
 
-    def append_then_commands(stages, instance)
+    def append_then_commands(scenario_number, stages, instance)
       then_stages = stages_with_names(stages, ["then"])
-      parse_stages(then_stages) { |k, v| make_then_command(k, v, instance) }
+      parse_stages(then_stages) { |k, v| make_then_command(scenario_number, k, v, instance) }
     end
 
-    def append_status_command(line, instance, statusCode)
+    def append_status_command(scenario_number, line, instance, statusCode)
       if statusCode
-        metadata = CommandMetadata.new(line, statusCode)
+        metadata = CommandMetadata.new(scenario_number, line, statusCode)
         status_command = @command_factory.make_call_command(metadata, instance, "statusCode")
         @document_builder.append_command(status_command)
       end
     end
 
-    def make_given_command(property_name, value_container, instance)
+    def make_given_command(scenario_number, property_name, value_container, instance)
       line = value_container["line"]
       value = value_container["value"]
-      make_set_command(line, instance, property_name, value)
+      make_set_command(scenario_number, line, instance, property_name, value)
     end
 
-    def make_set_command(line, instance, name, value)
-      metadata = CommandMetadata.new(line)
+    def make_set_command(scenario_number, line, instance, name, value)
+      metadata = CommandMetadata.new(scenario_number, line)
       @command_factory.make_call_command(metadata, instance, "set_#{name}", value)
     end
 
-    def make_then_command(property_name, value_container, instance)
+    def make_then_command(scenario_number, property_name, value_container, instance)
       line = value_container["line"]
       value = value_container["value"]
-      metadata = CommandMetadata.new(line, value)
+      metadata = CommandMetadata.new(scenario_number, line, value)
       @command_factory.make_call_command(metadata, instance, property_name)
     end
 

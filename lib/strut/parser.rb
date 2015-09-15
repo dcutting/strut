@@ -15,6 +15,7 @@ module Strut
       @document_builder = DocumentBuilder.new
       @interaction_factory = InteractionFactory.new
       @scenario_builder = ScenarioBuilder.new(@document_builder, @command_factory)
+      @scenario_number = 0
     end
 
     def parse(yaml)
@@ -47,13 +48,13 @@ module Strut
       if node_name.start_with?(X_SCENARIO_PREFIX)
         fixture = node_name.gsub(/^#{X_SCENARIO_PREFIX}/, "")
         interaction = @interaction_factory.make_interaction(path_stack)
-        @scenario_builder.extract_scenario_for_interaction(interaction, fixture, node)
+        @scenario_number = @scenario_builder.extract_scenarios_for_interaction(@scenario_number, interaction, fixture, node)
       else
-        extract_scenarios_for_children(node["value"], path_stack)
+        extract_scenarios_for_children(@scenario_number, node["value"], path_stack)
       end
     end
 
-    def extract_scenarios_for_children(node, path_stack)
+    def extract_scenarios_for_children(scenario_number, node, path_stack)
       return unless node.respond_to?(:each_pair)
       node.each_pair do |child_node_name, child_node|
         next_path_stack = path_stack + [child_node_name]

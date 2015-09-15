@@ -26,12 +26,12 @@ module Strut
 
     def process_result(result, metadata, report)
       if exception_message = exceptional_result?(result)
-        report.add_exception_for_line(metadata.line, exception_message)
+        report.add_exception_for_line(metadata.scenario_number, metadata.line, exception_message)
       elsif failed_result?(result, metadata)
         fail_message = "Expected #{metadata.expected_value} but got #{result}"
-        report.add_fail_for_line(metadata.line, fail_message)
+        report.add_fail_for_line(metadata.scenario_number, metadata.line, fail_message)
       else
-        report.add_ok_for_line(metadata.line)
+        report.add_ok_for_line(metadata.scenario_number, metadata.line)
       end
     end
 
