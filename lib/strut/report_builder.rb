@@ -13,7 +13,7 @@ module Strut
     def handle_response(response, document, report)
       command_id, result = *response
       if command_id == "error"
-        report.add_fail_for_line(1, result.to_s)
+        report.add_fail_for_line(nil, 1, result.to_s)
       else
         metadata = document.metadata_for_command_id(command_id)
         if metadata

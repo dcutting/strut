@@ -29,7 +29,7 @@ module Strut
       if @annotations[line].nil? or @annotations[line].type == :ok
         @annotations[line] = Annotation.new(type, message)
       end
-      ary = @scenario_results[scenario_number] << type
+      ary = @scenario_results[scenario_number] << type unless scenario_number.nil?
     end
 
     def annotation_for_line(line)
