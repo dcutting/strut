@@ -23,7 +23,7 @@ module Strut
 
     def make_scenario(scenario_number, line, instance, fixture, interaction, scenario_stages)
       append_make_command(scenario_number, line, instance, fixture)
-      append_uri_command(scenario_number, line, instance, interaction.uri)
+      append_uri_command(scenario_number, line, instance, interaction.uri, scenario_stages)
       append_method_command(scenario_number, line, instance, interaction.method)
       append_given_commands(scenario_number, scenario_stages, instance)
       append_execute_command(scenario_number, line, instance)
@@ -37,10 +37,11 @@ module Strut
       @document_builder.append_command(make_command)
     end
 
-    def append_uri_command(scenario_number, line, instance, uri)
+    def append_uri_command(scenario_number, line, instance, uri, scenario_stages)
       if uri
         metadata = CommandMetadata.new(scenario_number, line)
-        path_command = make_set_command(scenario_number, line, instance, "uri", uri)
+        combined_uri = combine_uri_with_parameters(scenario_stages, uri)
+        path_command = make_set_command(scenario_number, line, instance, "uri", combined_uri)
         @document_builder.append_command(path_command)
       end
     end
@@ -51,6 +52,18 @@ module Strut
         method_command = make_set_command(scenario_number, line, instance, "method", method)
         @document_builder.append_command(method_command)
       end
+    end
+
+    def combine_uri_with_parameters(stages, uri)
+      combined_uri = uri.dup
+      when_stages = stages_with_names(stages, ["when"])
+      when_stages.each do |stage|
+        stage.each do |k, v|
+          argument = v["value"].to_s
+          combined_uri.gsub!(/\{#{k}\}/, argument)
+        end
+      end
+      combined_uri
     end
 
     def append_given_commands(scenario_number, stages, instance)
