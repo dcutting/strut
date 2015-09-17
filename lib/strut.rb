@@ -17,10 +17,6 @@ module Strut
 
       yaml = File.read(config.swagger)
       document = Parser.new(config.namespace).parse(yaml)
-      document.commands.each do |command|
-        puts command
-      end
-      exit
 
       responses = get_responses(config, document)
       exit if responses.nil?
