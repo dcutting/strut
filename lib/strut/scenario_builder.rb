@@ -6,7 +6,7 @@ module Strut
     end
 
     def extract_scenarios_for_interaction(scenario_number, interaction, fixture, node)
-      instance = "instance"
+      instance = "instance-#{scenario_number}"
       line = node["line"]
       scenario_definitions_for_node(node).each do |scenario_stages|
         make_scenario(scenario_number, line, instance, fixture, interaction, scenario_stages)
