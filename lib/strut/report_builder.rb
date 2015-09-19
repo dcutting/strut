@@ -19,7 +19,7 @@ module Strut
         if metadata
           process_result(result, metadata, report)
         else
-          report.add_fail_for_line(1, "unexpected response from Slim: #{response.inspect}")
+          report.add_fail_for_line(nil, 1, "unexpected response from Slim: #{response.inspect}")
         end
       end
     end
