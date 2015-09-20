@@ -59,4 +59,11 @@ describe Report do
     expect(@sut.number_failed).to eq(0)
     expect(@sut.number_skipped).to eq(0)
   end
+
+  it 'returns an OK annotation for a line that has just that annotation' do
+    @sut.add_ok_for_line(1, 1)
+    actual = @sut.annotation_for_line(1)
+    expected = Annotation.new(ANNOTATION_OK, "")
+    expect(actual).to eq(expected)
+  end
 end
