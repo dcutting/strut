@@ -1,6 +1,7 @@
 # Strut
 
 [![Build Status](https://travis-ci.org/dcutting/strut.svg?branch=master)](https://travis-ci.org/dcutting/strut)
+[![Coverage Status](https://coveralls.io/repos/dcutting/strut/badge.svg?branch=master&service=github)](https://coveralls.io/github/dcutting/strut?branch=master)
 
 Acceptance testing with [Swagger](http://swagger.io).
 
