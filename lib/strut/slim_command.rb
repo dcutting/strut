@@ -20,6 +20,8 @@ module Strut
   end
 
   class ImportCommand < SlimCommand
+    attr_reader :namespace
+
     def initialize(id, metadata, namespace)
       super(id, metadata)
       @namespace = namespace
@@ -39,6 +41,8 @@ module Strut
   end
 
   class MakeCommand < SlimCommand
+    attr_reader :instance, :class_name
+
     def initialize(id, metadata, instance, class_name)
       super(id, metadata)
       @instance = instance
@@ -59,6 +63,8 @@ module Strut
   end
 
   class CallCommand < SlimCommand
+    attr_reader :instance, :property, :value
+    
     def initialize(id, metadata, instance, property, value)
       super(id, metadata)
       @instance = instance
