@@ -5,7 +5,7 @@ include Strut
 describe SlimCommandFactory do
   before do
     @sut = SlimCommandFactory.new
-    @metadata = CommandMetadata.new(3, 15, "message")
+    @metadata = CommandMetadata.new(3, 15, "value")
   end
 
   it 'makes an import command' do
