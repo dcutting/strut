@@ -3,6 +3,16 @@ require "psych"
 # Adapted from:
 # http://stackoverflow.com/questions/29462856/loading-yaml-with-line-number-for-each-key
 
+module Psych
+  def self.parse_yaml(yaml)
+    handler = LineNumberHandler.new
+    parser =  Psych::Parser.new(handler)
+    handler.parser = parser
+    parser.parse(yaml)
+    handler.root.to_ruby.first
+  end
+end
+
 # Psych's first step is to parse the Yaml into an AST of Node objects
 # so we open the Node class and add a way to track the line.
 class Psych::Nodes::Node

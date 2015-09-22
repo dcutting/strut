@@ -12,16 +12,8 @@ module Strut
 
     def read_and_store(config_file, path)
       yaml = File.read(config_file)
-      parsed_yaml = parse_yaml(yaml)
+      parsed_yaml = Psych::parse_yaml(yaml)
       store_values(parsed_yaml, path)
-    end
-
-    def parse_yaml(yaml)
-      handler = LineNumberHandler.new
-      parser =  Psych::Parser.new(handler)
-      handler.parser = parser
-      parser.parse(yaml)
-      handler.root.to_ruby.first
     end
 
     def store_values(yaml, config_path)

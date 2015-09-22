@@ -19,18 +19,10 @@ module Strut
     end
 
     def parse(yaml)
-      parsed_yaml = parse_yaml(yaml)
+      parsed_yaml = Psych::parse_yaml(yaml)
       append_import_command
       extract_scenarios(parsed_yaml)
       @document_builder.document
-    end
-
-    def parse_yaml(yaml)
-      handler = LineNumberHandler.new
-      parser =  Psych::Parser.new(handler)
-      handler.parser = parser
-      parser.parse(yaml)
-      handler.root.to_ruby.first
     end
 
     def append_import_command
