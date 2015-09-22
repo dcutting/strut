@@ -36,26 +36,33 @@ module Strut
     def print_annotated_line(annotation, line)
       case annotation.type
       when ANNOTATION_EXCEPTION
-        print_exception_line(annotation.message, line)
+        print_exception_line(line, annotation.message)
       when ANNOTATION_FAIL
-        print_fail_line(annotation.message, line)
+        print_fail_line(line, annotation.message)
       else
         print_ok_line(line)
       end
     end
 
-    def print_exception_line(message, line)
-      print black { on_yellow { line } }, "\n"
-      print yellow { on_black { message } }, "\n"
+    def print_exception_line(line, message)
+      print_error_line(line, :black, :on_yellow, message, :yellow, :on_black)
     end
 
-    def print_fail_line(message, line)
-      print white { on_red { line } }, "\n"
-      print red { on_white { message } }, "\n"
+    def print_fail_line(line, message)
+      print_error_line(line, :white, :on_red, message, :red, :on_white)
     end
 
     def print_ok_line(line)
-      print black { on_green { line } }, "\n"
+      print_line(line, :black, :on_green)
+    end
+
+    def print_error_line(line, line_fg, line_bg, message, message_fg, message_bg)
+      print_line(line, line_fg, line_bg)
+      print_line(message, message_fg, message_bg)
+    end
+
+    def print_line(line, foreground, background)
+      puts line.send(foreground).send(background)
     end
   end
 end
