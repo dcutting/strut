@@ -5,9 +5,9 @@ require "equivalent-xml"
 
 include Strut
 
-describe ReportJunit do
+describe ReportJUnitFormatter do
   before do
-    @sut = ReportJunit.new
+    @sut = ReportJUnitFormatter.new
   end
 
   it 'returns an empty JUnit report for an empty strut report' do
