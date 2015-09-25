@@ -2,7 +2,7 @@ require "strut/scenario_result"
 
 module Strut
   class Report
-    attr_reader :number_scenarios, :number_passed, :number_failed, :number_skipped
+    attr_reader :number_scenarios, :number_passed, :number_failed, :number_skipped, :errors
 
     def initialize
       @scenario_results = []
@@ -26,7 +26,7 @@ module Strut
     end
 
     def number_scenarios
-      0
+      @scenario_results.count
     end
 
     def number_passed

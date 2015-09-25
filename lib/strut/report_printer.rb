@@ -15,6 +15,7 @@ module Strut
         print_line_with_annotation(line.chomp, annotation)
       end
       puts
+      print_errors(report)
       print "#{report.number_scenarios} scenarios ("
       print green { "#{report.number_passed} passed" }, ", "
       print red { "#{report.number_failed} failed" }, ", "
@@ -63,6 +64,14 @@ module Strut
 
     def print_line(line, foreground, background)
       puts line.send(foreground).send(background)
+    end
+
+    def print_errors(report)
+      return if report.errors.empty?
+      report.errors.each do |error|
+        print red { error }, "\n"
+      end
+      puts
     end
   end
 end
