@@ -10,7 +10,7 @@ describe ReportJunit do
     @sut = ReportJunit.new
   end
 
-  it 'returns an empty Junit report for an empty Strut report' do
+  it 'returns an empty JUnit report for an empty strut report' do
     report = Report.new
     actual = Nokogiri::XML(@sut.format(report))
     expected_doc = <<XML

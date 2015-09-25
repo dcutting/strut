@@ -1,12 +1,12 @@
+require "nokogiri"
+
 module Strut
   class ReportJunit
     def format(report)
-      result = <<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite>
-</testsuite>
-XML
-      result
+      builder = Nokogiri::XML::Builder.new do |xml|
+        xml.testsuite = nil
+      end
+      builder.to_xml
     end
   end
 end
