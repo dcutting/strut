@@ -18,11 +18,10 @@ module Strut
     end
 
     def annotations_for_line(line)
-      @scenario_results.each do |result|
-        annotations = result.annotations_for_line(line)
-        return annotations unless annotations.empty?
+      all_annotations = @scenario_results.map do |result|
+        result.annotations_for_line(line)
       end
-      []
+      all_annotations.reject { |a| a.empty? }.flatten
     end
 
     def number_scenarios
