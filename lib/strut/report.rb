@@ -1,3 +1,5 @@
+require "strut/scenario_result"
+
 module Strut
   ANNOTATION_OK = :ok
   ANNOTATION_FAIL = :fail
