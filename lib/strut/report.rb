@@ -17,12 +17,12 @@ module Strut
       @scenario_results << result
     end
 
-    def annotation_for_line(line)
+    def annotations_for_line(line)
       @scenario_results.each do |result|
-        annotation = result.annotation_for_line(line)
-        return annotation unless annotation.nil?
+        annotations = result.annotations_for_line(line)
+        return annotations unless annotations.empty?
       end
-      nil
+      []
     end
 
     def number_scenarios
@@ -30,15 +30,15 @@ module Strut
     end
 
     def number_passed
-      0
+      @scenario_results.select { |result| result.result == SCENARIO_PASS }.count
     end
 
     def number_failed
-      0
+      @scenario_results.select { |result| result.result == SCENARIO_FAIL }.count
     end
 
     def number_skipped
-      0
+      @scenario_results.select { |result| result.result == SCENARIO_ERROR }.count
     end
   end
 end

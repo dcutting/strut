@@ -1,17 +1,15 @@
+require "strut/annotation"
+
 module Strut
-  SCENARIO_RESULT_PASS = "pass"
-
-  ANNOTATION_OK = :ok
-  ANNOTATION_FAIL = :fail
-  ANNOTATION_EXCEPTION = :exception
-
-  Annotation = Struct.new(:type, :message)
+  SCENARIO_PASS = "pass"
+  SCENARIO_FAIL = "fail"
+  SCENARIO_ERROR = "error"
 
   class ScenarioResult
     attr_accessor :name, :time, :result
 
     def initialize
-      @annotations = {}
+      @annotations = Hash.new { |h, k| h[k] = [] }
     end
 
     def add_ok_for_line(line)
@@ -27,13 +25,17 @@ module Strut
     end
 
     def add_annotation_for_line(line, type, message = "")
-      if @annotations[line].nil? or @annotations[line].type == :ok
-        @annotations[line] = Annotation.new(type, message)
-      end
+      @annotations[line] << Annotation.new(type, message)
     end
 
-    def annotation_for_line(line)
+    def annotations_for_line(line)
       @annotations[line]
+    end
+
+    def result
+      return SCENARIO_ERROR if @annotations.include?(ANNOTATION_EXCEPTION)
+      return SCENARIO_FAIL if @annotations.include?(ANNOTATION_FAIL)
+      return SCENARIO_PASS
     end
   end
 end

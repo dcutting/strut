@@ -11,8 +11,8 @@ module Strut
 
     def print_report(report)
       @lines.each_line.each_with_index do |line, index|
-        annotation = report.annotation_for_line(index+1)
-        print_line_with_annotation(line.chomp, annotation)
+        annotations = report.annotations_for_line(index+1)
+        print_line_with_annotations(line.chomp, annotations)
       end
       puts
       print_errors(report)
@@ -22,11 +22,11 @@ module Strut
       print yellow { "#{report.number_skipped} skipped" }, ")\n"
     end
 
-    def print_line_with_annotation(line, annotation)
-      if annotation.nil?
+    def print_line_with_annotations(line, annotations)
+      if annotations.empty?
         print_unannotated_line(line)
       elsif
-        print_annotated_line(annotation, line)
+        print_annotated_line(annotations, line)
       end
     end
 
@@ -34,7 +34,10 @@ module Strut
       puts line
     end
 
-    def print_annotated_line(annotation, line)
+    def print_annotated_line(annotations, line)
+      # TODO: print all annotations, not just the first
+      annotation = annotations.first
+
       case annotation.type
       when ANNOTATION_EXCEPTION
         print_exception_line(line, annotation.message)
