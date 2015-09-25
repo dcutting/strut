@@ -2,6 +2,7 @@ require "strut/config"
 require "strut/parser"
 require "strut/report_builder"
 require "strut/report_printer"
+require "strut/report_junit"
 require "strut/slim_client"
 require "strut/version"
 
