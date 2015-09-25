@@ -1,4 +1,7 @@
 require "spec_helper"
+require "rspec/matchers"
+require "nokogiri"
+require "equivalent-xml"
 
 include Strut
 
@@ -9,9 +12,13 @@ describe ReportJunit do
 
   it 'returns an empty Junit report for an empty Strut report' do
     report = Report.new
-    actual = @sut.format(report)
-    expected = "<junit></junit>"
-    expect(actual).to eq(expected)
+    actual = Nokogiri::XML(@sut.format(report))
+    expected_doc = <<XML
+<testsuite>
+</testsuite>
+XML
+    expected = Nokogiri::XML(expected_doc)
+    expect(actual).to be_equivalent_to(expected)
   end
 
   it 'handles a passing test' do
