@@ -23,7 +23,8 @@ module Strut
       exit if responses.nil?
 
       report = ReportBuilder.new.build(responses, document)
-      ReportPrinter.new(yaml).print_report(report)
+      output = ReportPrinter.new(yaml).print_report(report)
+      puts output
     end
 
     def read_config(config_file)

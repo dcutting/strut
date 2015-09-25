@@ -10,6 +10,17 @@ module Strut
     end
 
     def print_report(report)
+      begin
+        out = StringIO.new
+        $stdout = out
+        print_report_to_stdout(report)
+      ensure
+        $stdout = STDOUT
+      end
+      out.string
+    end
+
+    def print_report_to_stdout(report)
       @lines.each_line.each_with_index do |line, index|
         annotations = report.annotations_for_line(index+1)
         print_line_with_annotations(line.chomp, annotations)
@@ -19,7 +30,7 @@ module Strut
       print "#{report.number_scenarios} scenarios ("
       print green { "#{report.number_passed} passed" }, ", "
       print red { "#{report.number_failed} failed" }, ", "
-      print yellow { "#{report.number_skipped} skipped" }, ")\n"
+      print yellow { "#{report.number_skipped} skipped" }, ")"
     end
 
     def print_line_with_annotations(line, annotations)
