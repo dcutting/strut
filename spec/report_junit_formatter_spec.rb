@@ -24,11 +24,11 @@ XML
     result1 = ScenarioResult.new
     result1.name = "201 POST /users"
     result1.time = "0.5"
-    result1.result = SCENARIO_RESULT_PASS
+    result1.result = SCENARIO_PASS
     result2 = ScenarioResult.new
     result2.name = "400 POST /users"
     result2.time = "0.2"
-    result2.result = SCENARIO_RESULT_PASS
+    result2.result = SCENARIO_PASS
 
     report = Report.new
     report.add_scenario_result(result1)
