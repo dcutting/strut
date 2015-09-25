@@ -48,7 +48,8 @@ XML
     result1 = ScenarioResult.new
     result1.name = "201 POST /users"
     result1.time = "0.5"
-    result1.add_fail_for_line(1, "Expected 201 but got 200")
+    result1.add_ok_for_line(1)
+    result1.add_fail_for_line(3, "Expected 201 but got 200")
 
     report = Report.new
     report.add_scenario_result(result1)
@@ -67,6 +68,11 @@ XML
   def expect_equivalent_xml(actual_xml, expected_xml)
     actual = Nokogiri::XML(actual_xml)
     expected = Nokogiri::XML(expected_xml)
-    expect(actual).to be_equivalent_to(expected)
+    begin
+      expect(actual).to be_equivalent_to(expected)
+    rescue
+      puts actual.inspect
+      puts expected.inspect
+    end
   end
 end
