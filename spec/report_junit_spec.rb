@@ -12,13 +12,12 @@ describe ReportJunit do
 
   it 'returns an empty JUnit report for an empty strut report' do
     report = Report.new
-    actual = Nokogiri::XML(@sut.format(report))
-    expected_doc = <<XML
+    actual = @sut.format(report)
+    expected = <<XML
 <testsuite>
 </testsuite>
 XML
-    expected = Nokogiri::XML(expected_doc)
-    expect(actual).to be_equivalent_to(expected)
+    expect_equivalent_xml(actual, expected)
   end
 
   it 'handles a passing test' do
@@ -31,5 +30,11 @@ XML
     actual = @sut.format(report)
     expected = "<junit><test><name>get stuff</name><result>pass</result></test></junit>"
     expect(actual).to eq(expected)
+  end
+
+  def expect_equivalent_xml(actual_xml, expected_xml)
+    actual = Nokogiri::XML(actual_xml)
+    expected = Nokogiri::XML(expected_xml)
+    expect(actual).to be_equivalent_to(expected)
   end
 end
