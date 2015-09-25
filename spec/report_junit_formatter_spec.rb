@@ -70,9 +70,10 @@ XML
     expected = Nokogiri::XML(expected_xml)
     begin
       expect(actual).to be_equivalent_to(expected)
-    rescue
-      puts actual.inspect
-      puts expected.inspect
+    rescue => e
+      puts actual
+      puts expected
+      throw e
     end
   end
 end
