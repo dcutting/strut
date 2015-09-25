@@ -4,12 +4,12 @@ include Term::ANSIColor
 require "strut/report"
 
 module Strut
-  class ReportPrinter
+  class ReportPrettyFormatter
     def initialize(lines)
       @lines = lines
     end
 
-    def print_report(report)
+    def format(report)
       begin
         out = StringIO.new
         $stdout = out
