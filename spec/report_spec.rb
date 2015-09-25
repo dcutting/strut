@@ -8,7 +8,8 @@ describe Report do
   end
 
   it 'reports 1 total scenario for a single ok' do
-    @sut.add_ok_for_line(1, 1)
+    result = ScenarioResult.new
+    @sut.add_scenario_result(result)
     expect(@sut.number_scenarios).to eq(1)
     expect(@sut.number_passed).to eq(1)
     expect(@sut.number_failed).to eq(0)
@@ -16,7 +17,9 @@ describe Report do
   end
 
   it 'reports 1 total scenario for a single fail' do
-    @sut.add_fail_for_line(1, 1, "failed")
+    result = ScenarioResult.new
+    result.add_fail_for_line(1, "failed")
+    @sut.add_scenario_result(result)
     expect(@sut.number_scenarios).to eq(1)
     expect(@sut.number_passed).to eq(0)
     expect(@sut.number_failed).to eq(1)
@@ -24,7 +27,9 @@ describe Report do
   end
 
   it 'reports 1 total scenario for a single exception' do
-    @sut.add_exception_for_line(1, 1, "exception")
+    result = ScenarioResult.new
+    result.add_exception_for_line(1, "exception")
+    @sut.add_scenario_result(result)
     expect(@sut.number_scenarios).to eq(1)
     expect(@sut.number_passed).to eq(0)
     expect(@sut.number_failed).to eq(0)
@@ -32,9 +37,11 @@ describe Report do
   end
 
   it 'reports 1 total scenario for an ok, fail and exception for the same scenario' do
-    @sut.add_ok_for_line(1, 1)
-    @sut.add_fail_for_line(1, 1, "failed")
-    @sut.add_exception_for_line(1, 1, "exception")
+    result = ScenarioResult.new
+    result.add_ok_for_line(1)
+    result.add_fail_for_line(1, "failed")
+    result.add_exception_for_line(1, "exception")
+    @sut.add_scenario_result(result)
     expect(@sut.number_scenarios).to eq(1)
     expect(@sut.number_passed).to eq(0)
     expect(@sut.number_failed).to eq(0)
@@ -42,28 +49,18 @@ describe Report do
   end
 
   it 'reports correctly for multiple scenarios' do
-    @sut.add_ok_for_line(1, 1)
-    @sut.add_ok_for_line(1, 2)
-    @sut.add_fail_for_line(2, 1, "failed")
-    @sut.add_exception_for_line(3, 1, "exception")
+    result1 = ScenarioResult.new
+    result1.add_ok_for_line(1)
+    result2 = ScenarioResult.new
+    result2.add_fail_for_line(3, "failed")
+    result3 = ScenarioResult.new
+    result3.add_exception_for_line(4, "exception")
+    @sut.add_scenario_result(result1)
+    @sut.add_scenario_result(result2)
+    @sut.add_scenario_result(result3)
     expect(@sut.number_scenarios).to eq(3)
     expect(@sut.number_passed).to eq(1)
     expect(@sut.number_failed).to eq(1)
     expect(@sut.number_skipped).to eq(1)
-  end
-
-  it 'handles annotations with no scenario number' do
-    @sut.add_ok_for_line(nil, 1)
-    expect(@sut.number_scenarios).to eq(0)
-    expect(@sut.number_passed).to eq(0)
-    expect(@sut.number_failed).to eq(0)
-    expect(@sut.number_skipped).to eq(0)
-  end
-
-  it 'returns an OK annotation for a line that has just that annotation' do
-    @sut.add_ok_for_line(1, 1)
-    actual = @sut.annotation_for_line(1)
-    expected = Annotation.new(ANNOTATION_OK, "")
-    expect(actual).to eq(expected)
   end
 end
