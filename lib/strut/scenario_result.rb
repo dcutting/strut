@@ -6,7 +6,8 @@ module Strut
   SCENARIO_ERROR = "error"
 
   class ScenarioResult
-    attr_accessor :name, :time, :result
+    attr_accessor :name, :time
+    attr_reader :result, :message
 
     def initialize
       @annotations = Hash.new { |h, k| h[k] = [] }
@@ -37,6 +38,19 @@ module Strut
       return SCENARIO_ERROR if all_annotations.any? { |a| a.type == ANNOTATION_EXCEPTION }
       return SCENARIO_FAIL if all_annotations.any? { |a| a.type == ANNOTATION_FAIL }
       return SCENARIO_PASS
+    end
+
+    def message
+      all_annotations = @annotations.values.flatten
+
+      exception = all_annotations.detect { |a| a.type = ANNOTATION_EXCEPTION }
+      return exception.message unless exception.nil?
+
+      failure = all_annotations.detect { |a| a.type = ANNOTATION_FAIL }
+      return failure.message unless failure.nil?
+
+      ok = all_annotations.detect { |a| a.type = ANNOTATION_OK }
+      return ok.message unless ok.nil?
     end
   end
 end

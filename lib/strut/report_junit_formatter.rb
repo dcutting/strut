@@ -24,7 +24,21 @@ module Strut
       testcase.set_attribute("name", scenario.name)
       testcase.set_attribute("time", scenario.time)
       testcase.set_attribute("classname", "")
+      add_result_for_testcase(scenario, testcase)
       testsuite.add_child(testcase)
+    end
+
+    def add_result_for_testcase(scenario, testcase)
+      if scenario.result == SCENARIO_FAIL
+        add_failure_for_testcase(scenario.message, testcase)
+      end
+    end
+
+    def add_failure_for_testcase(message, testcase)
+      failure = Node.new("failure", testcase)
+      failure.set_attribute("message", message)
+      failure.set_attribute("type", "")
+      testcase.add_child(failure)
     end
   end
 end

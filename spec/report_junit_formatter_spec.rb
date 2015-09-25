@@ -24,11 +24,11 @@ XML
     result1 = ScenarioResult.new
     result1.name = "201 POST /users"
     result1.time = "0.5"
-    result1.result = SCENARIO_PASS
+    result1.add_ok_for_line(1)
     result2 = ScenarioResult.new
     result2.name = "400 POST /users"
     result2.time = "0.2"
-    result2.result = SCENARIO_PASS
+    result2.add_ok_for_line(2)
 
     report = Report.new
     report.add_scenario_result(result1)
@@ -39,6 +39,26 @@ XML
 <testsuite>
   <testcase name="201 POST /users" classname="" time="0.5" />
   <testcase name="400 POST /users" classname="" time="0.2" />
+</testsuite>
+XML
+    expect_equivalent_xml(actual, expected)
+  end
+
+  it 'handles a failing test' do
+    result1 = ScenarioResult.new
+    result1.name = "201 POST /users"
+    result1.time = "0.5"
+    result1.add_fail_for_line(1, "Expected 201 but got 200")
+
+    report = Report.new
+    report.add_scenario_result(result1)
+
+    actual = @sut.format(report)
+    expected = <<XML
+<testsuite>
+  <testcase name="201 POST /users" classname="" time="0.5">
+    <failure message="Expected 201 but got 200" type="" />
+  </testcase>
 </testsuite>
 XML
     expect_equivalent_xml(actual, expected)
