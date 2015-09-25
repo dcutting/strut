@@ -33,8 +33,9 @@ module Strut
     end
 
     def result
-      return SCENARIO_ERROR if @annotations.include?(ANNOTATION_EXCEPTION)
-      return SCENARIO_FAIL if @annotations.include?(ANNOTATION_FAIL)
+      all_annotations = @annotations.values.flatten
+      return SCENARIO_ERROR if all_annotations.any? { |a| a.type == ANNOTATION_EXCEPTION }
+      return SCENARIO_FAIL if all_annotations.any? { |a| a.type == ANNOTATION_FAIL }
       return SCENARIO_PASS
     end
   end
