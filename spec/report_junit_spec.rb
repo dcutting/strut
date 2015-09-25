@@ -20,16 +20,28 @@ XML
     expect_equivalent_xml(actual, expected)
   end
 
-  it 'handles a passing test' do
+  it 'handles some passing tests' do
+    result1 = ScenarioResult.new
+    result1.name = "201 POST /users"
+    result1.time = "0.5"
+    result1.result = SCENARIO_RESULT_PASS
+    result2 = ScenarioResult.new
+    result2.name = "400 POST /users"
+    result2.time = "0.2"
+    result2.result = SCENARIO_RESULT_PASS
+
     report = Report.new
-    result = ScenarioResult.new
-    result.number = 1
-    result.name = "get stuff"
-    result.result = SCENARIO_RESULT_PASS
-    report.add_scenario_result(result)
+    report.add_scenario_result(result1)
+    report.add_scenario_result(result2)
+
     actual = @sut.format(report)
-    expected = "<junit><test><name>get stuff</name><result>pass</result></test></junit>"
-    expect(actual).to eq(expected)
+    expected = <<XML
+<testsuite>
+  <testcase name="201 POST /users" classname="" time="0.5" />
+  <testcase name="400 POST /users" classname="" time="0.2" />
+</testsuite>
+XML
+    expect_equivalent_xml(actual, expected)
   end
 
   def expect_equivalent_xml(actual_xml, expected_xml)
