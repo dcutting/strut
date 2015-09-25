@@ -9,12 +9,12 @@ module Strut
       @errors = []
     end
 
-    def add_error(error)
-      @errors << error
-    end
-
     def add_scenario_result(result)
       @scenario_results << result
+    end
+
+    def add_error(error)
+      @errors << error
     end
 
     def annotations_for_line(line)
@@ -29,15 +29,19 @@ module Strut
     end
 
     def number_passed
-      @scenario_results.select { |result| result.result == SCENARIO_PASS }.count
+      number_with_result(SCENARIO_PASS)
     end
 
     def number_failed
-      @scenario_results.select { |result| result.result == SCENARIO_FAIL }.count
+      number_with_result(SCENARIO_FAIL)
     end
 
     def number_skipped
-      @scenario_results.select { |result| result.result == SCENARIO_ERROR }.count
+      number_with_result(SCENARIO_ERROR)
+    end
+
+    def number_with_result(result)
+      @scenario_results.select { |scenario| scenario.result == result }.count
     end
   end
 end
