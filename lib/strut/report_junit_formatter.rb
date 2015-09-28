@@ -37,7 +37,7 @@ module Strut
     def add_failure_for_testcase(message, testcase)
       failure = Node.new("failure", testcase)
       failure.set_attribute("message", message)
-      failure.set_attribute("type", "")
+      failure.set_attribute("type", "assert")
       testcase.add_child(failure)
     end
   end

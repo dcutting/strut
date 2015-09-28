@@ -37,8 +37,8 @@ XML
     actual = @sut.format(report)
     expected = <<XML
 <testsuite>
-  <testcase name="201 POST /users" classname="" time="0.5" />
-  <testcase name="400 POST /users" classname="" time="0.2" />
+  <testcase name="201 POST /users" classname="swagger" time="0.5" />
+  <testcase name="400 POST /users" classname="swagger" time="0.2" />
 </testsuite>
 XML
     expect_equivalent_xml(actual, expected)
@@ -57,8 +57,8 @@ XML
     actual = @sut.format(report)
     expected = <<XML
 <testsuite>
-  <testcase name="201 POST /users" classname="" time="0.5">
-    <failure message="Expected 201 but got 200" type="" />
+  <testcase name="201 POST /users" classname="swagger" time="0.5">
+    <failure message="Expected 201 but got 200" type="assert" />
   </testcase>
 </testsuite>
 XML
