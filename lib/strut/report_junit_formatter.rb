@@ -5,7 +5,7 @@ include Nokogiri::XML
 module Strut
   class ReportJUnitFormatter
     def format(report)
-      doc = DocumentFragment.parse("")
+      doc = DocumentFragment.parse("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
       results = report.scenario_results
       add_testsuite(results, doc)
       doc.to_xml
