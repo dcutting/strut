@@ -31,6 +31,8 @@ module Strut
     def add_result_for_testcase(scenario, testcase)
       if scenario.result == SCENARIO_FAIL
         add_failure_for_testcase(scenario.message, testcase)
+      elsif scenario.result == SCENARIO_ERROR
+        add_error_for_testcase(scenario.message, testcase)
       end
     end
 
@@ -39,6 +41,13 @@ module Strut
       failure.set_attribute("message", message)
       failure.set_attribute("type", "assert")
       testcase.add_child(failure)
+    end
+
+    def add_error_for_testcase(message, testcase)
+      error = Node.new("error", testcase)
+      error.set_attribute("message", message)
+      error.set_attribute("type", "exception")
+      testcase.add_child(error)
     end
   end
 end
