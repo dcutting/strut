@@ -71,8 +71,8 @@ XML
     begin
       expect(actual).to be_equivalent_to(expected)
     rescue => e
-      puts actual
-      puts expected
+      puts "Expected: #{expected}"
+      puts "Actual: #{actual}"
       throw e
     end
   end
