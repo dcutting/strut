@@ -43,14 +43,16 @@ module Strut
     def message
       all_annotations = @annotations.values.flatten
 
-      exception = all_annotations.detect { |a| a.type = ANNOTATION_EXCEPTION }
+      exception = all_annotations.detect { |a| a.type == ANNOTATION_EXCEPTION }
       return exception.message unless exception.nil?
 
-      failure = all_annotations.detect { |a| a.type = ANNOTATION_FAIL }
+      failure = all_annotations.detect { |a| a.type == ANNOTATION_FAIL }
       return failure.message unless failure.nil?
 
-      ok = all_annotations.detect { |a| a.type = ANNOTATION_OK }
+      ok = all_annotations.detect { |a| a.type == ANNOTATION_OK }
       return ok.message unless ok.nil?
+
+      ""
     end
   end
 end
