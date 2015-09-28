@@ -33,6 +33,8 @@ module Strut
 
     def process_result(result, metadata, report, scenario_results)
       scenario_result = scenario_results[metadata.scenario_number]
+      scenario_result.name = "Scenario #{metadata.scenario_number}, line #{metadata.line}"
+
       if exception_message = exceptional_result?(result)
         scenario_result.add_exception_for_line(metadata.line, exception_message)
       elsif failed_result?(result, metadata)

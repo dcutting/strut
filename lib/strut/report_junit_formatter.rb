@@ -23,7 +23,7 @@ module Strut
       testcase = Node.new("testcase", testsuite)
       testcase.set_attribute("name", scenario.name)
       testcase.set_attribute("time", scenario.time)
-      testcase.set_attribute("classname", "")
+      testcase.set_attribute("classname", "swagger")
       add_result_for_testcase(scenario, testcase)
       testsuite.add_child(testcase)
     end

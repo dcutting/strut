@@ -11,6 +11,7 @@ module Strut
 
     def initialize
       @annotations = Hash.new { |h, k| h[k] = [] }
+      @time = 0.0
     end
 
     def add_ok_for_line(line)
