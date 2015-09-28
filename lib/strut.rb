@@ -1,7 +1,8 @@
 require "strut/config"
 require "strut/parser"
 require "strut/report_builder"
-require "strut/report_printer"
+require "strut/report_junit_formatter"
+require "strut/report_pretty_formatter"
 require "strut/slim_client"
 require "strut/version"
 
@@ -22,7 +23,9 @@ module Strut
       exit if responses.nil?
 
       report = ReportBuilder.new.build(responses, document)
-      ReportPrinter.new(yaml).print_report(report)
+      formatter = make_formatter(config, yaml)
+      output = formatter.format(report)
+      puts output
     end
 
     def read_config(config_file)
@@ -43,6 +46,14 @@ module Strut
         puts e
       ensure
         Process.kill("KILL", pid) unless pid.nil?
+      end
+    end
+
+    def make_formatter(config, yaml)
+      if config.output == :junit
+        return ReportJUnitFormatter.new
+      else
+        return ReportPrettyFormatter.new(yaml)
       end
     end
   end

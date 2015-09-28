@@ -4,28 +4,40 @@ include Term::ANSIColor
 require "strut/report"
 
 module Strut
-  class ReportPrinter
+  class ReportPrettyFormatter
     def initialize(lines)
       @lines = lines
     end
 
-    def print_report(report)
+    def format(report)
+      begin
+        out = StringIO.new
+        $stdout = out
+        print_report_to_stdout(report)
+      ensure
+        $stdout = STDOUT
+      end
+      out.string
+    end
+
+    def print_report_to_stdout(report)
       @lines.each_line.each_with_index do |line, index|
-        annotation = report.annotation_for_line(index+1)
-        print_line_with_annotation(line.chomp, annotation)
+        annotations = report.annotations_for_line(index+1)
+        print_line_with_annotations(line.chomp, annotations)
       end
       puts
+      print_errors(report)
       print "#{report.number_scenarios} scenarios ("
       print green { "#{report.number_passed} passed" }, ", "
       print red { "#{report.number_failed} failed" }, ", "
-      print yellow { "#{report.number_skipped} skipped" }, ")\n"
+      print yellow { "#{report.number_skipped} skipped" }, ")"
     end
 
-    def print_line_with_annotation(line, annotation)
-      if annotation.nil?
+    def print_line_with_annotations(line, annotations)
+      if annotations.empty?
         print_unannotated_line(line)
       elsif
-        print_annotated_line(annotation, line)
+        print_annotated_line(annotations, line)
       end
     end
 
@@ -33,7 +45,10 @@ module Strut
       puts line
     end
 
-    def print_annotated_line(annotation, line)
+    def print_annotated_line(annotations, line)
+      # TODO: print all annotations, not just the first
+      annotation = annotations.first
+
       case annotation.type
       when ANNOTATION_EXCEPTION
         print_exception_line(line, annotation.message)
@@ -63,6 +78,14 @@ module Strut
 
     def print_line(line, foreground, background)
       puts line.send(foreground).send(background)
+    end
+
+    def print_errors(report)
+      return if report.errors.empty?
+      report.errors.each do |error|
+        print red { error }, "\n"
+      end
+      puts
     end
   end
 end

@@ -15,7 +15,7 @@ module Strut
       @document_builder = DocumentBuilder.new
       @interaction_factory = InteractionFactory.new
       @scenario_builder = ScenarioBuilder.new(@document_builder, @command_factory)
-      @scenario_number = 0
+      @scenario_number = 1
     end
 
     def parse(yaml)
