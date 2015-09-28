@@ -70,6 +70,7 @@ XML
     result1.name = "201 POST /users"
     result1.time = "0.5"
     result1.add_ok_for_line(1)
+    result1.add_fail_for_line(2, "Uh oh")
     result1.add_exception_for_line(3, "Uncaught exception")
 
     report = Report.new
