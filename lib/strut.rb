@@ -13,7 +13,6 @@ module Strut
 
   class Strut
     def run(args)
-      junit = false
       config_file = args.shift || ".strut.yml"
       config = read_config(config_file)
 
@@ -24,7 +23,7 @@ module Strut
       exit if responses.nil?
 
       report = ReportBuilder.new.build(responses, document)
-      formatter = junit ? ReportJUnitFormatter.new : ReportPrettyFormatter.new(yaml)
+      formatter = make_formatter(config, yaml)
       output = formatter.format(report)
       puts output
     end
@@ -47,6 +46,14 @@ module Strut
         puts e
       ensure
         Process.kill("KILL", pid) unless pid.nil?
+      end
+    end
+
+    def make_formatter(config, yaml)
+      if config.output == :junit
+        return ReportJUnitFormatter.new
+      else
+        return ReportPrettyFormatter.new(yaml)
       end
     end
   end

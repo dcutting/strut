@@ -3,7 +3,7 @@ require "strut/extensions"
 
 module Strut
   class Config
-    attr_reader :swagger, :runner, :host, :port, :max_attempts, :namespace
+    attr_reader :swagger, :runner, :host, :port, :max_attempts, :namespace, :output
 
     def initialize(config_file)
       path = File.dirname(config_file)
@@ -23,6 +23,7 @@ module Strut
       @port = extract_int_value(yaml, "port")
       @max_attempts = extract_int_value(yaml, "max_attempts")
       @namespace = extract_value(yaml, "namespace")
+      @output = extract_enum_value(yaml, "output", [:junit, :pretty])
     end
 
     def swagger_path(yaml, config_path)
@@ -47,6 +48,12 @@ module Strut
     def extract_int_value(yaml, name)
       value = extract_value(yaml, name).to_i
       throw "'#{name}' must be a number > 0." unless value > 0
+      value
+    end
+
+    def extract_enum_value(yaml, name, enums)
+      value = extract_value(yaml, name).to_sym
+      throw "'#{name}' must be one of #{enums}." unless enums.include?(value)
       value
     end
   end
