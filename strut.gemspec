@@ -24,7 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "coveralls"
   spec.add_development_dependency "equivalent-xml"
 
-  spec.add_dependency "nokogiri", "~> 1.6"
   spec.add_dependency "term-ansicolor", "~> 1.3"
   spec.add_dependency "rubyslim", "~> 0.1"
 end
