@@ -39,7 +39,7 @@ You need a .strut.yml configuration file in the directory where you run strut (o
     swagger:
       my_service.yaml
     runner:
-      Runner.exe -r fitSharp.Slim.Service.Runner,fitsharp.dll MyService.Specs.dll 9011
+      Runner.exe -a "..\MyService.Specs\bin\Debug\MyService.Specs.dll.config" -r fitSharp.Slim.Service.Runner,Slim/fitsharp.dll MyService.Specs/bin/Debug/MyService.Specs.dll 9011
     host:
       localhost
     port:
