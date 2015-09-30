@@ -31,15 +31,17 @@ module Strut
     end
 
     def add_failure_for_testcase(message, testcase)
-      failure = testcase.add_element("failure")
-      failure.attributes["message"] = message
-      failure.attributes["type"] = "assert"
+      add_element_for_testcase("failure", testcase, message, "assert")
     end
 
     def add_error_for_testcase(message, testcase)
-      error = testcase.add_element("error")
-      error.attributes["message"] = message
-      error.attributes["type"] = "exception"
+      add_element_for_testcase("error", testcase, message, "exception")
+    end
+
+    def add_element_for_testcase(element, testcase, message, type)
+      node = testcase.add_element(element)
+      node.attributes["message"] = message
+      node.attributes["type"] = type
     end
   end
 end
