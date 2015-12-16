@@ -1,4 +1,6 @@
 require "psych"
+require "psych/nodes"
+require "psych/tree_builder"
 
 # Adapted from:
 # http://stackoverflow.com/questions/29462856/loading-yaml-with-line-number-for-each-key
