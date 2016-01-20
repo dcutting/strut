@@ -32,6 +32,8 @@ Then run it from any directory containing a .strut.yml configuration file:
 
     $ strut
 
+NB: If you are installing on Windows, you will need to install the RubyInstaller [DevKit](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit) before installing strut as it has some native dependencies.
+
 ## .strut.yml configuration file
 
 You need a .strut.yml configuration file in the directory where you run strut (or you can specify a path to one as the only argument to strut). That file should look like this:
